@@ -309,7 +309,9 @@ class Users implements UserInterface {
 }
 ```
 
-> We can load the database ([/symfony/bbdd/bbdd.sql](./symfony/bbdd/bbdd.sql)) using phmyadmin and enter a first example user.
+> We can load the database in ([/symfony/bbdd/bbdd.sql](./symfony/bbdd/bbdd.sql)) using phmyadmin and enter a first example user.
+
+> To read the rest of the project entities access the folders [/symfony/src/Entity/](./symfony/src/Entity/) and [/symfony/config/doctrine/](./symfony/config/doctrine/).
 
 --------------------------------------------------------------------------------------------
 
@@ -337,7 +339,8 @@ _[src/Resources/config/routing.yml](./symfony/src/Resources/config/routing.yml)_
 ```yml
 app_routing_folder:
     # loads routes from the given routing file stored in some bundle
-    resource: 'routing\' 
+    prefix: '/api/v1'
+    resource: 'routing/' 
     type: directory
 ```
 
@@ -360,9 +363,6 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Validator\Constraints as Assert;
 
 use App\Entity\Users;
 
@@ -370,12 +370,461 @@ class DefaultController extends Controller {
   public function index (request $request) {
     $em = $this->getDoctrine()->getManager();
     $user_repo = $em->getRepository(Users::class);
+    $userList = $user_repo->findAll();
     return $this->render('base.html.twig', [
       'base_dir' =>realpath($this->getParameter('kernel.project_dir')).DIRECTORY_SEPARATOR,
-      'user'=>$user_repo
+      'user'=>$userList
     ]);
   }
 }
 ```
 
-4. If we run `php bin/console server:run` and access [http://127.0.0.1:8000/test](http://127.0.0.1:8000/test) we can see the existing entity.
+4. If we run `php bin/console server:run` and access [http://127.0.0.1:8000/api/v1/test](http://127.0.0.1:8000/api/v1/test) we can see the existing entity.
+
+--------------------------------------------------------------------------------------------
+
+### 5.Creating a JSON Response
+
+--------------------------------------------------------------------------------------------
+
+> To convert data to Json using symfony it is necessary to have the `http-foundation` component ( Source: [The HttpFoundation Component](https://symfony.com/doc/current/components/http_foundation.html) ).
+
+```bash
+composer require symfony/http-foundation
+```
+
+1. First we will check the sending method jsonResponse, generating a test in the controller [/symfony/src/Controller/DefaultController.php](./symfony/src/Controller/DefaultController.php).
+
+_[/symfony/src/Controller/DefaultController.php](./symfony/src/Controller/DefaultController.php)_
+```diff
+<?php
+// src/Controller/DefaultController.php
+namespace App\Controller;
+
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+
+++ use Symfony\Component\HttpFoundation\JsonResponse;
+
+use App\Entity\User;
+
+class DefaultController extends Controller {
+  public function tests (Request $request){
+    $em = $this->getDoctrine()->getManager();
+    $user_repo = $em->getRepository(User::class);
+    $userList = $user_repo->findAll();
+++  /*
+    return $this->render('base.html.twig', [
+      'base_dir' => realpath($this->getParameter('kernel.project_dir')).DIRECTORY_SEPARATOR,
+      'user'=>$user_repo
+    ]);
+++  */
+++  return new JsonResponse(array(
+++    'status' => 'succes',
+++    'users' => $user_repo
+++  ));
+  }
+}
+```
+
+> Although we use the `JsonResponse()` component, in symfony there is a default component which we access through `$this->json()`.
+
+2. If we run `php bin/console server: run` and access [http://127.0.0.1:8000/](http://127.0.0.1:8000/) we will see that it does not convert correctly. Still we see that `JsonResponse()` does not perform the conversion correctly so we will have to generate a service that performs the conversion correctly.
+
+> To create our encoder **Json** you must execute the command `composer require symfony/serializer` to download the **serializer component**.
+
+```bash
+composer require symfony/serializer
+```
+
+_[/symfony/src/Service/Helpers.php](./symfony/src/Service/Helpers.php)_
+```php
+<?php
+// src/Service/Helpers.php
+namespace App\Service;
+
+class Helpers{
+    public $manager;
+	public function __construct($manager){
+		$this->manager = $manager;
+	}    
+	public function json($data){
+		$normalizers = array(new \Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer());
+		// 
+		$encoders = array("json" => new \Symfony\Component\Serializer\Encoder\JsonEncoder());
+
+		$serializer = new \Symfony\Component\Serializer\Serializer($normalizers, $encoders);
+		$json = $serializer->serialize($data, 'json');
+
+		$response = new \Symfony\Component\HttpFoundation\Response();
+		$response->setContent($json);
+		$response->headers->set('Content-Type', 'application/json');
+
+		return $response;
+	}
+	public function decoding_json($json){
+		$params = json_decode($json);
+		return $params;
+	}
+}
+```
+
+* `GetSetMethodNormalizer`, This normalizer reads the content of the class by calling the "getters" (public methods starting with "get"). It will denormalize data by calling the constructor and the "setters" (public methods starting with "set").
+Objects are normalized to a map of property names and values (names are generated removing the `get` prefix from the method name and lowercasing the first letter; e.g. `getFirstName() -> firstName`).
+
+* **Encoders**, `JsonEncoder`, This class encodes and decodes data in JSON.
+
+3. To use this new service it is necessary to declare it in [config/services.yaml](./symfony/config/services.yaml).
+
+_[/symfony/config/services.yaml](./symfony/config/services.yaml)_
+```diff
+//...
+    # controllers are imported separately to make sure services can be injected
+    # as action arguments even if you don't extend any base controller class
+    App\Controller\:
+        resource: '../src/Controller'
+        tags: ['controller.service_arguments']
+
+    # add more service definitions when explicit configuration is needed
+    # please note that last definitions always *replace* previous ones
+++  App\Service\Helpers:
+++      public: true
+++      arguments: 
+++          $manager: '@doctrine.orm.entity_manager'
+```
+
+4. Inside the [src/Controller/DefaultController.php](./symfony/src/Controller/DefaultController.php) we will call it that.
+
+_[/symfony/src/Controller/DefaultController.php](./symfony/src/Controller/DefaultController.php)_
+```diff
+<?php
+// src/Controller/DefaultController.php
+namespace App\Controller;
+
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+
+use Symfony\Component\HttpFoundation\JsonResponse;
+
+++ use App\Service\Helpers;
+
+use App\Entity\User;
+
+class DefaultController extends Controller {
+-- public function index (Request $request){
+++ public function index (Request $request, Helpers $helpers){    
+    $em = $this->getDoctrine()->getManager();
+    $user_repo = $em->getRepository(User::class);
+    $userList = $user_repo->findAll();
+
+++  return $helpers->json($userList);   
+--  return new JsonResponse(array(
+--      'status' => 'succes',
+--      'users' => $userList
+--  ));
+  }
+}
+```
+
+--------------------------------------------------------------------------------------------
+
+### 6.Login JWT
+
+--------------------------------------------------------------------------------------------
+
+1. Create the `function login` within [/symfony/src/Controller/AuthenticationController.php](./symfony/src/Controller/AuthenticationController.php).
+
+_[/symfony/src/Controller/DefaultController.php](./symfony/src/Controller/DefaultController.php)_
+```diff
+namespace App\Controller;
+
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+++ use Symfony\Component\HttpFoundation\JsonResponse;
+
+++ use Symfony\Component\Validator\Constraints as Assert;
+
+++ use App\Service\Helpers;
+
+//...
+class AuthenticationController extends Controller {
+  //..
+
+++ public function login(Request $request, Helpers $helpers){
+++  // Receive json by POST
+++  $json = $request->get('json', null);
+++  // Array to return by default
+++  $data = array(
+++      'status' => 'error',
+++      'data' => 'Send json via post !!'
+++    );
+++  }
+++  return $helpers->json($data);
+++ }
+
+//..
+```
+
+3. We add a new route in [src/Resources/config/routing/default.yml](./symfony/src/Resources/config/routing/default.yml).
+
+_[/symfony/src/Resources/config/routing/authentication.yml](./symfony/src/Resources/config/routing/authentication.yml)_
+```yml
+authentication_login:
+    path: /login
+    controller: App\Controller\AuthenticationController::login
+    methods:   [POST]
+```
+4. Access to [https://app.getpostman.com/](https://app.getpostman.com/) and send a petition to url [http://127.0.0.1:8000/api/v1/login](http://127.0.0.1:8000/api/v1/login)
+
+> You must receive the following message: `{"status":"error","data":"Send json via post !!"}`.
+
+5. We complete the **method login** so that it looks for the email match within the **User entity**.
+
+_[/symfony/src/Controller/AuthenticationController.php](./symfony/src/Controller/AuthenticationController.php)_
+```diff
+//...
+class AuthenticationController extends Controller {
+  //..
+  public function login(Request $request, Helpers $helpers){
+    // Receive json by POST
+    $json = $request->get('json', null);
+    // Array to return by default
+    $data = array( 'status' => 'error', 'data' => 'Send json via post !!' );
+++  if($json != null){
+++      // you make the login
+++      // We convert a json to a php object
+++      $params = json_decode($json);
+++      $email = (isset($params->email)) ? $params->email : null;
+++      $password = (isset($params->password)) ? $params->password : null;
+
+++      $emailConstraint = new Assert\Email();
+++      $emailConstraint->message = "This email is not valid !!";
+++      $validate_email = $this->get("validator")->validate($email, $emailConstraint);
+
+++      if($email != null && count($validate_email) == 0 && $password != null){
+++          $data = array(
+++              'status' => 'success',
+++              'data' => 'Login success'
+++          );
+++      }else{
+++          $data = array(
+++              'status' => 'error',
+++              'data' => 'Email or password incorrect'
+++          );
+++      }
+++  }
+    return $helpers->json($data);
+  }
+//..
+```
+
+6. Access to [https://app.getpostman.com/](https://app.getpostman.com/) and send a petition to url [http://127.0.0.1:8000/api/v1/login](http://127.0.0.1:8000/api/v1/login) using in the body `x-www-form-urlencoded` with **key** `json` and **value** `{"email":"admin@admin.com", "password":"1"}`.
+
+> You must receive the following message: `{"status":"success","data":"Email or password success"}`.
+
+7. we will need to create a new **service** that authenticates us and generates the token.
+
+_[src/Service/JwtAuth.php](./symfony/src/Service/JwtAuth.php)_
+```php
+<?php
+// src/Service/JwtAuth.php
+namespace App\Service;
+
+use App\Entity\User;
+use Firebase\JWT\JWT;
+
+class JwtAuth{
+	public $manager;
+	public $key;
+
+	public function __construct($manager){
+		$this->manager = $manager;
+		$this->key = 'helloHowIAmTheSecretKey-98439284934829';
+	}
+	public function signup($email, $password, $getHash = null){
+		$user = $this->manager->getRepository(User::class)->findOneBy(array(
+			"email" => $email,
+			"password" => $password
+		));
+		$signup = (is_object($user))? true : false;
+		if($signup == true){
+			// GENERATE TOKEN JWT
+			$token = array(
+				"sub"   => $user->getId(),
+				"email" => $user->getEmail(),
+				"name"	=> $user->getName(),
+				"surname" => $user->getSurname(),
+				"iat"	=> time(),
+				"exp"	=> time() + (7 * 24 * 60 * 60)
+			);
+			$jwt = JWT::encode($token, $this->key, 'HS256');
+			$decoded = JWT::decode($jwt, $this->key, array('HS256'));
+            $data = ($getHash == null)? $jwt : $decoded ;
+		}else{
+			$data = array( 'status' => 'error', 'data' => 'Login failed!!' );
+		}
+		return $data;
+	}
+}
+```
+
+> You need the library **Firebase\JWT**, to install execute the command `composer require firebase/php-jwt`.
+
+8. To use this new service it is necessary to declare it in [config/services.yaml](./symfony/config/services.yaml).
+
+_[config/services.yaml](./symfony/config/services.yaml)_
+```diff
+//...
+    # controllers are imported separately to make sure services can be injected
+    # as action arguments even if you don't extend any base controller class
+    App\Controller\:
+        resource: '../src/Controller'
+        tags: ['controller.service_arguments']
+
+    # add more service definitions when explicit configuration is needed
+    # please note that last definitions always *replace* previous ones
+    App\Service\Helpers:
+        public: true
+        arguments: 
+            $manager: '$manager: '@doctrine.orm.entity_manager'
+++  App\Service\JwtAuth:
+++      public: true
+++      arguments: 
+++          $manager: '@doctrine.orm.entity_manager'            
+```
+9. Now we will modify the **login method**, in [/symfony/src/Controller/AuthenticationController.php](./symfony/src/Controller/AuthenticationController.php), so that it consults in the database if the user exists and if it exists, it generates a **token**.
+
+_[/symfony/src/Controller/AuthenticationController.php](./symfony/src/Controller/AuthenticationController.php)_
+```diff
+//...
+use App\Service\Helpers;
+++ use App\Service\JwtAuth;
+//...
+class AuthenticationController extends Controller {
+  //..
+-- public function login(Request $request, Helpers $helpers){
+++ public function login(Request $request, Helpers $helpers, JwtAuth $jwt_auth ){    
+    // Receive json by POST
+    $json = $request->get('json', null);
+    // Array to return by default
+    $data = array( 'status' => 'error', 'data' => 'Send json via post !!' );
+    if($json != null){
+        // you make the login
+        // We convert a json to a php object
+        $params = json_decode($json);
+        $email = (isset($params->email)) ? $params->email : null;
+        $password = (isset($params->password)) ? $params->password : null;
+
+        $emailConstraint = new Assert\Email();
+        $emailConstraint->message = "This email is not valid !!";
+        $validate_email = $this->get("validator")->validate($email, $emailConstraint);
+
+        if($email != null && count($validate_email) == 0 && $password != null){
+--          $data = array(
+--              'status' => 'success',
+--              'data' => 'Login success'
+--          );
+++          $jwt_auth = $this->get(JwtAuth::class);
+++          if($getHash == null || $getHash == false){
+++              $signup = $jwt_auth->signup($email, $pwd);
+++          }else{
+++              $signup = $jwt_auth->signup($email, $pwd, true);
+++          }
+++          return new JsonResponse($signup);
+        }else{
+            $data = array(
+                'status' => 'error',
+                'data' => 'Email or password incorrect'
+            );
+        }
+    }
+    return $helpers->json($data);
+  }
+//..
+```
+
+> **IMPORTANT** We replace the return command `$this->json($signup);` by `return new JsonResponse($signup);` to avoid failures in the transformation to json.
+
+10. we must generate a new method within the service that checks the token.
+
+_[src/Service/JwtAuth.php](./symfony/src/Service/JwtAuth.php)_
+```diff
+//..
+class JwtAuth{
+    //..
+++	public function checkToken($jwt, $getIdentity = false){
+++      $auth = false;
+++		try{
+++			$decoded = JWT::decode($jwt, $this->key, array('HS256'));
+++      }catch(
+++            \UnexpectedValueException $e){ $auth = false; 
+++      }catch(
+++            \DomainException $e){ $auth = false; 
+++      }
+++		if(isset($decoded) && is_object($decoded) && isset($decoded->sub)){ $auth = true; }else{ $auth = false; }
+++		if($getIdentity == false){ 
+++          return $auth; 
+++      }else{
+++          return $decoded; 
+++      }
+++  }
+    //..
+```
+
+11. Now, I can post in [https://app.getpostman.com/](https://app.getpostman.com/) a new request to url [http://127.0.0.1:8000/api/v1/login](http://127.0.0.1:8000/api/v1/login) using in the body `x-www-form-urlencoded` with **key** `json` and **value** `{"email":"admin@admin.com", "password":"1"}` to collect the token. 
+
+In our case we received:
+
+```bash
+"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjEsImVtYWlsIjoiYWRtaW5AYWRtaW4uY29tIiwibmFtZSI6ImFkbWluIiwic3VybmFtZSI6ImFkbWluIiwiaWF0IjoxNTI1MDk3NTEwLCJleHAiOjE1MjU3MDIzMTB9.UA3f6W2mqzrHCoJNvCqxHW4NmOFe-9sMVfNOXXPW_gY"
+```
+
+12. We modify the **test method** in [/symfony/src/Controller/DefaultController.php](./symfony/src/Controller/DefaultController.php).
+
+_[/symfony/src/Controller/DefaultController.php](./symfony/src/Controller/DefaultController.php)_
+```diff
+//...
+use App\Service\Helpers;
+use App\Service\JwtAuth;
+//...
+class DefaultController extends Controller {
+  public function test (Request $request, Helpers $helpers){
+++  $token = $request->get("authorization", null);      
+++  if ($token){  
+        $em = $this->getDoctrine()->getManager();
+        $user_repo = $em->getRepository(User::class);
+        $userList = $user_repo->findAll();
+
+        return $helpers->json(array(
+            'status' => 'success',
+            'users' => $userList
+        ));
+++  } else {
+--      return $helpers->json($userList);
+++    return $helpers->json(array(
+++      'status' => 'error',
+++      'code' => 400,
+++      'users' => 'Login failed!!!'
+++    )); 
+++  }
+}
+```
+
+12. Again, I can post in [https://app.getpostman.com/](https://app.getpostman.com/) a new request to url [http://127.0.0.1:8000/api/v1/test](http://127.0.0.1:8000/api/v1/test) using in the body `x-www-form-urlencoded` with **key** `authorization` and **value** `"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjEsImVtYWlsIjoiYWRtaW5AYWRtaW4uY29tIiwibmFtZSI6ImFkbWluIiwic3VybmFtZSI6ImFkbWluIiwiaWF0IjoxNTI1MDk3NTEwLCJleHAiOjE1MjU3MDIzMTB9.UA3f6W2mqzrHCoJNvCqxHW4NmOFe-9sMVfNOXXPW_gY"` to collect the token.
+
+In our case we received:
+
+```bash
+{"status":"success","users":[{"id":1,"username":"","name":"admin","surname":"admin","email":"admin@admin.com","password":"1","createdAt":{"timezone":{"name":"UTC","transitions":[{"ts":-9223372036854775808,"time":"-292277022657-01-27T08:29:52+0000","offset":0,"isdst":false,"abbr":"UTC"}],"location":{"country_code":"??","latitude":0,"longitude":0,"comments":""}},"offset":0,"timestamp":1522540800},"salt":null,"role":"admin","roles":["ROLE_USER","ROLE ADMIN"]}]}
+```
+
+--------------------------------------------------------------------------------------------
+
+### 7.Other Requests to the Api
+
+--------------------------------------------------------------------------------------------
+
+> To be able to access the rest of the requests, you must see the url of the request inside the routing files of the directory [/symfony/src/Resources/config/routing/](./symfony/src/Resources/config/routing/) and access the corresponding controller method [/symfony/src/Controller/](./symfony/src/Controller/).
