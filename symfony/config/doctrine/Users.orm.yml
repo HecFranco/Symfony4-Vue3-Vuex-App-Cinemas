@@ -1,0 +1,66 @@
+App\Entity\Users:
+    type: entity
+    #repositoryClass: App\Repository\UserRepository      
+    table: users
+    id:
+        id:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        role:
+            type: json_array
+            nullable: false
+            length: null
+            options:
+                fixed: false         
+        username:
+            type: string
+            nullable: true
+            length: 80
+            options:
+                fixed: false
+        name:
+            type: string
+            nullable: true
+            length: 180
+            options:
+                fixed: false
+        surname:
+            type: string
+            nullable: true
+            length: 255
+            options:
+                fixed: false                
+        email:
+            type: string
+            nullable: false
+            length: 254
+            options:
+                fixed: false
+        plainPassword:
+            type: text
+            length: 4096
+            column: plain_password
+        password:
+            type: string
+            length: 64
+        isActive:
+            type: boolean
+            nullable: false
+            options:
+                default: '0'
+            column: is_active
+        createdAt:
+            type: datetime
+            nullable: false
+            column: created_at
+        updatedAt:
+            type: datetime
+            nullable: false
+            column: updated_at
+    lifecycleCallbacks: {  }

@@ -1,0 +1,4 @@
+genres_list:
+    path: /genres
+    controller: App\Controller\GenreController::allGenres
+    methods:   [POST]

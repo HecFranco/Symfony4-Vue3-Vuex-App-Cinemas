@@ -1,0 +1,46 @@
+App\Entity\Rooms:
+    type: entity
+    #repositoryClass: App\Repository\RoomsRepository  
+    table: rooms
+    indexes:
+        cinema:
+            columns:
+                - cinema
+    id:
+        id:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        rows:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+        seats:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+        number:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+    manyToOne:
+        cinema:
+            targetEntity: Cinemas
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            # inversedBy: roomsList
+            inversedBy: null
+            joinColumns:
+                cinema:
+                    referencedColumnName: id
+            orphanRemoval: false
+    lifecycleCallbacks: {  }

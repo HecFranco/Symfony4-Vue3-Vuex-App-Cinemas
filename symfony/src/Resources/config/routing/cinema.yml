@@ -1,0 +1,7 @@
+cinema_get:
+    path: /cinema/{nameUrl}
+    controller: App\Controller\CinemaController::findCinema
+    methods:   [POST]  
+cinema_list:
+    path: /cinemas
+    controller: App\Controller\CinemaController::allCinemas   

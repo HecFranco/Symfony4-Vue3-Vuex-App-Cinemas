@@ -1,0 +1,65 @@
+App\Entity\Cinemas:
+    type: entity
+    repositoryClass: App\Repository\CinemasRepository  
+    table: cinemas
+    id:
+        id:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        name:
+            type: string
+            nullable: false
+            length: 100
+            options:
+                fixed: false
+        nameUrl:
+            type: string
+            nullable: false
+            length: 100
+            options:
+                fixed: false     
+            column: name_url
+            unique: true                         
+        screenshot:
+            type: string
+            nullable: false
+            length: 120
+            options:
+                fixed: false
+        address:
+            type: string
+            nullable: false
+            length: 100
+            options:
+                fixed: false
+        phone:
+            type: string
+            nullable: false
+            length: 14
+            options:
+                fixed: false
+        seatCapacity:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            column: seat_capacity
+        details:
+            type: text
+            nullable: false
+            length: 65535
+            options:
+                fixed: false
+    oneToMany:
+        # roomsList # is not found within the DB, but it is defined in the entity to list the elements
+        # roomsList:
+            # targetEntity: Rooms
+            # mappedBy # refers to the column of the table # Rooms # within the BD related to the table # cinemas #
+            # mappedBy: cinema               
+    lifecycleCallbacks: {  }

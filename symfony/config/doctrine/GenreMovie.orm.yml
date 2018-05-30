@@ -1,0 +1,42 @@
+App\Entity\GenreMovie:
+    type: entity
+    #repositoryClass: App\Repository\GenreMovieRepository  
+    table: genre_movie
+    indexes:
+        movie:
+            columns:
+                - movie
+        genre:
+            columns:
+                - genre
+    id:
+        id:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            generator:
+                strategy: IDENTITY
+    manyToOne:
+        genre:
+            targetEntity: Genres
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                genre:
+                    referencedColumnName: id
+            orphanRemoval: false
+        movie:
+            targetEntity: Movies
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                movie:
+                    referencedColumnName: id
+            orphanRemoval: false
+    lifecycleCallbacks: {  }

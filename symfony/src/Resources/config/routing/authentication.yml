@@ -1,0 +1,13 @@
+
+authentication_login:
+    path: /login
+    controller: App\Controller\AuthenticationController::login
+    methods:   [POST]
+authentication_register:
+    path: /register
+    controller: App\Controller\AuthenticationController::register
+    methods:   [POST]
+authentication_profile:
+    path: /profile
+    controller: App\Controller\AuthenticationController::editProfile
+    methods:   [PUT]

@@ -1,0 +1,68 @@
+App\Entity\MovieShowings:
+    type: entity
+    #repositoryClass: App\Repository\MovieShowingsRepository  
+    table: movie_showings
+    indexes:
+        cinema:
+            columns:
+                - cinema
+        movie:
+            columns:
+                - movie
+        room:
+            columns:
+                - room
+    id:
+        id:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        showDate:
+            type: date
+            nullable: false
+            column: show_date
+        createdAt:
+            type: datetime
+            nullable: false
+            column: created_at
+        updatedAt:
+            type: datetime
+            nullable: false
+            column: updated_at
+    manyToOne:
+        cinema:
+            targetEntity: Cinemas
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                cinema:
+                    referencedColumnName: id
+            orphanRemoval: false
+        movie:
+            targetEntity: Movies
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                movie:
+                    referencedColumnName: id
+            orphanRemoval: false
+        room:
+            targetEntity: Rooms
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                room:
+                    referencedColumnName: id
+            orphanRemoval: false
+    lifecycleCallbacks: {  }

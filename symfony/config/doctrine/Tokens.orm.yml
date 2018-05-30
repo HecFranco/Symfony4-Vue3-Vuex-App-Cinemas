@@ -1,0 +1,54 @@
+App\Entity\Tokens:
+    type: entity
+    #repositoryClass: App\Repository\TokensRepository   
+    table: tokens
+    indexes:
+        user:
+            columns:
+                - user
+    id:
+        id:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        token:
+            type: string
+            nullable: false
+            length: 40
+            options:
+                fixed: false
+        type:
+            type: string
+            nullable: false
+            length: 80
+            options:
+                fixed: false
+        isRevoked:
+            type: boolean
+            nullable: false
+            column: is_revoked
+        createdAt:
+            type: datetime
+            nullable: false
+            column: created_at
+        updatedAt:
+            type: datetime
+            nullable: false
+            column: updated_at
+    manyToOne:
+        user:
+            targetEntity: Users
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                user:
+                    referencedColumnName: id
+            orphanRemoval: false
+    lifecycleCallbacks: {  }

@@ -1,0 +1,53 @@
+App\Entity\Bookings:
+    type: entity
+    #repositoryClass: App\Repository\BookingsRepository  
+    table: bookings
+    indexes:
+        customer:
+            columns:
+                - customer
+        movie_showing_time:
+            columns:
+                - movie_showing_time
+    id:
+        id:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        madeDate:
+            type: datetime
+            nullable: false
+            column: made_date
+        seatCount:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            column: seat_count
+    manyToOne:
+        movieShowingTime:
+            targetEntity: MovieShowingTimes
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                movie_showing_time:
+                    referencedColumnName: id
+            orphanRemoval: false
+        customer:
+            targetEntity: Customers
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                customer:
+                    referencedColumnName: id
+            orphanRemoval: false
+    lifecycleCallbacks: {  }

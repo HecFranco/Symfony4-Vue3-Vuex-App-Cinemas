@@ -1,0 +1,37 @@
+App\Entity\MovieShowingTimes:
+    type: entity
+    #repositoryClass: App\Repository\MovieShowingTimesRepository  
+    table: movie_showing_times
+    indexes:
+        movie_showing:
+            columns:
+                - movie_showing
+    id:
+        id:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        hourToShow:
+            type: string
+            nullable: false
+            length: 20
+            options:
+                fixed: false
+            column: hour_to_show
+    manyToOne:
+        movieShowing:
+            targetEntity: MovieShowings
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                movie_showing:
+                    referencedColumnName: id
+            orphanRemoval: false
+    lifecycleCallbacks: {  }

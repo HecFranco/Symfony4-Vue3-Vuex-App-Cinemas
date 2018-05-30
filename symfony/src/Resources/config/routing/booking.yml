@@ -1,0 +1,13 @@
+booking_save:
+    path: /booking
+    controller: App\Controller\BookingaController::save
+    methods:   [POST]
+booking_last:
+    path: /booking/last
+    controller: App\Controller\BookingaController::last
+    methods:   [GET]    
+booking_all:
+    path: /booking/all
+    controller: App\Controller\BookingaController::all
+    methods:   [GET] 
+       

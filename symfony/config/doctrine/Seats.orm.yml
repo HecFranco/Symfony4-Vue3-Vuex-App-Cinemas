@@ -1,0 +1,53 @@
+App\Entity\Seats:
+    type: entity
+    #repositoryClass: App\Repository\SeatsRepository  
+    table: seats
+    indexes:
+        booking:
+            columns:
+                - booking
+        state:
+            columns:
+                - state
+    id:
+        id:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+            id: true
+            generator:
+                strategy: IDENTITY
+    fields:
+        row:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+        number:
+            type: integer
+            nullable: false
+            options:
+                unsigned: false
+    manyToOne:
+        state:
+            targetEntity: SeatState
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                state:
+                    referencedColumnName: id
+            orphanRemoval: false
+        booking:
+            targetEntity: Bookings
+            cascade: {  }
+            fetch: LAZY
+            mappedBy: null
+            inversedBy: null
+            joinColumns:
+                booking:
+                    referencedColumnName: id
+            orphanRemoval: false
+    lifecycleCallbacks: {  }
