@@ -2,9 +2,18 @@
 
 We will make the backend of the application with the framework Symfony. We will have two entities, **User** and **Task**. Access to the login will be via `Jwt`
 
-### Phases of the Demo
-1. []()
-
+### Summary steps:
+1. [Project Creation](#1project_creation)
+2. [Database Configuration](#2database_configuration)
+3. [Entities](#3entities)
+4. [Routing](#4routing)
+5. [Installing Vue, SASS and bootstrap 4 using WebPackEncore](#5installing_vue,_sass_and_bootstrap_4_using_webpackencore)
+    1. [Installing Twig](#51installing_twig)
+    2. [Installing Vue using WebPackEncore](#52installing_vue_using_webpackencore)
+    3. [Installing SASS and bootstrap 4](#53installing_sass_and_bootstrap_4)
+6. [Creating a JSON Response](#6creating_a_json_response)
+7. [Login JWT](#7login_jwt)
+8. [Other Requests to the Api](#8other_requests_to_the_api)
 
 ---------------------------------------------------------------------------------------
 
@@ -12,7 +21,7 @@ We will make the backend of the application with the framework Symfony. We will 
 
 ---------------------------------------------------------------------------------------
 
-### Summary Symfony component`s to use
+## Summary Symfony component`s to use
 
 * [Server Component](https://symfony.com/doc/current/setup.html), `composer require server --dev`
 * [Profiler Component](https://symfony.com/doc/current/profiler.html), `composer require --dev profiler`
@@ -45,12 +54,13 @@ We will make the backend of the application with the framework Symfony. We will 
 * `php bin/console doctrine:schema:update --force`
 * `php bin/console doctrine:migrations:diff`
 * `php bin/console doctrine:migrations:migrate`
+* `php bin/console make:controller Default`
 
 # Symfony 4 - Task Manager (Backend)
 
 --------------------------------------------------------------------------------------------
 
-### 1.Project Creation
+## 1.Project Creation
 
 --------------------------------------------------------------------------------------------
 
@@ -86,9 +96,11 @@ php bin/console server:run
 
 6. Access to [http://127.0.0.1:8000/](http://127.0.0.1:8000/) to view the result.
 
+<div style="text-align: right"><a href="#summary-steps">Return to <strong>Summary Steps</strong></a></div>
+
 --------------------------------------------------------------------------------------------
 
-### 2.Database Configuration
+## 2.Database Configuration
 
 --------------------------------------------------------------------------------------------
 
@@ -142,17 +154,19 @@ doctrine:
 
 (Source: [https://symfony.com/doc/current/doctrine.html](https://symfony.com/doc/current/doctrine.html))
 
+<div style="text-align: right"><a href="#summary-steps">Return to <strong>Summary Steps</strong></a></div>
+
 --------------------------------------------------------------------------------------------
 
-### 3.Entities
+## 3.Entities
 
 --------------------------------------------------------------------------------------------
 
 1. Now, We can generate our user and task entities.
 
-#### User Entity
+### User Entity
 
-_[config/doctrine/User.orm.yml](./symfony/config/doctrine/User.orm.yml)_
+_[config/doctrine/User.orm.yml](./config/doctrine/User.orm.yml)_
 ```yml
 App\Entity\Users:
     type: entity
@@ -222,7 +236,9 @@ App\Entity\Users:
     lifecycleCallbacks: {  }
 ```
 
-_[src/Entity/User.php](./symfony/src/Entity/User.php)_
+> We need use the **security-bundle** of Symfony to extends the class user (`class Users implements UserInterface {}`), for it execute the command `composer require symfony/security-bundle`.
+
+_[src/Entity/User.php](./src/Entity/User.php)_
 ```php
 <?php
 // src/Entity/User.php
@@ -309,19 +325,21 @@ class Users implements UserInterface {
 }
 ```
 
-> We can load the database in ([/symfony/bbdd/bbdd.sql](./symfony/bbdd/bbdd.sql)) using phmyadmin and enter a first example user.
+> We can load the database in ([/symfony/bbdd/bbdd.sql](./bbdd/bbdd.sql)) using phmyadmin and enter a first example user.
 
-> To read the rest of the project entities access the folders [/symfony/src/Entity/](./symfony/src/Entity/) and [/symfony/config/doctrine/](./symfony/config/doctrine/).
+> To read the rest of the project entities access the folders [/symfony/src/Entity/](./src/Entity/) and [/symfony/config/doctrine/](./config/doctrine/).
+
+<div style="text-align: right"><a href="#summary-steps">Return to <strong>Summary Steps</strong></a></div>
 
 --------------------------------------------------------------------------------------------
 
-### 4.Routing
+## 4.Routing
 
 --------------------------------------------------------------------------------------------
 
 1. We will use the routing type **yaml**, for them we configure the type of routing in [config/routes.yaml](config/routes.yaml).
 
-_[config/routes.yaml](./symfony/config/routes.yaml)_
+_[config/routes.yaml](./config/routes.yaml)_
 ```yml
 #index:
 #    path: /
@@ -333,9 +351,9 @@ routing_distributed:
     type: yaml
 ```
 
-2. Next step is defined our folder with routing files of our app in [src/Resources/config/routing.yml](./symfony/src/Resources/config/routing.yml)
+2. Next step is defined our folder with routing files of our app in [src/Resources/config/routing.yml](./src/Resources/config/routing.yml)
 
-_[src/Resources/config/routing.yml](./symfony/src/Resources/config/routing.yml)_
+_[src/Resources/config/routing.yml](./src/Resources/config/routing.yml)_
 ```yml
 app_routing_folder:
     # loads routes from the given routing file stored in some bundle
@@ -344,17 +362,17 @@ app_routing_folder:
     type: directory
 ```
 
-_[src/Resources/config/routing/default.yml](./symfony/src/Resources/config/routing/default.yml)_
+_[src/Resources/config/routing/default.yml](./src/Resources/config/routing/default.yml)_
 ```yml
 default_pruebas:
     path: /test
-    controller: App\DefaultController::test
+    controller: App\Controller\DefaultController::test
     #methods:   [POST] 
 ```
 
-3. Now we can test the generated entities and the router. For this we generate a first controller [/symfony/src/Controller/DefaultController.php](./symfony/src/Controller/AuthenticationController.php) with a method `tests()`.
+3. Now we can test the generated entities and the router. For this we generate a first controller [/src/Controller/DefaultController.php](./src/Controller/AuthenticationController.php) with a method `tests()`.
 
-_[/symfony/src/Controller/DefaultController.php](./symfony/src/Controller/DefaultController.php)_
+_[/src/Controller/DefaultController.php](./src/Controller/DefaultController.php)_
 ```php
 <?php
 // src/Controller/DefaultController.php
@@ -367,7 +385,7 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Entity\Users;
 
 class DefaultController extends Controller {
-  public function index (request $request) {
+  public function test (request $request) {
     $em = $this->getDoctrine()->getManager();
     $user_repo = $em->getRepository(Users::class);
     $userList = $user_repo->findAll();
@@ -381,9 +399,428 @@ class DefaultController extends Controller {
 
 4. If we run `php bin/console server:run` and access [http://127.0.0.1:8000/api/v1/test](http://127.0.0.1:8000/api/v1/test) we can see the existing entity.
 
+<div style="text-align: right"><a href="#summary-steps">Return to <strong>Summary Steps</strong></a></div>
+
 --------------------------------------------------------------------------------------------
 
-### 5.Creating a JSON Response
+## 5.Installing Vue, SASS and bootstrap 4 using WebPackEncore
+
+--------------------------------------------------------------------------------------------
+
+<div style="text-align: right"><a href="#summary-steps">Return to <strong>Summary Steps</strong></a></div>
+
+--------------------------------------------------------------------------------------------
+
+### 5.1.Installing Twig
+
+--------------------------------------------------------------------------------------------
+
+* [Twig Component](https://twig.symfony.com/doc/2.x/), `composer require twig`
+* [Twig Extension Component](https://symfony.com/doc/current/templating/twig_extension.html), `composer require twig/extensions`
+
+
+```bash
+composer require twig/extensions
+```
+(Source: [Twig Extension Component](https://symfony.com/doc/current/templating/twig_extension.html))
+
+```bash
+composer require symfony/asset
+```
+(Source: [Assets for Twig Component](https://symfony.com/doc/current/components/asset.html))
+
+> We will add the line `<meta name="viewport" content="width=device-width, initial-scale=1.0">` for can use the responsive web in mobiles.
+
+_[/templates/base.html.twig]()_
+```diff
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+++    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>{% block title %}Welcome!{% endblock %}</title>
+      {% block stylesheets %}{% endblock %}
+  </head>
+  <body>
+    {% block body %}{% endblock %}
+    {% block javascripts %}{% endblock %}
+  </body>
+</html>
+```
+
+<div style="text-align: right"><a href="#summary-steps">Return to <strong>Summary Steps</strong></a></div>
+
+--------------------------------------------------------------------------------------------
+
+### 5.2.Installing Vue using WebPackEncore
+
+--------------------------------------------------------------------------------------------
+
+(Source: [CloudWays - Getting Started With Vue.Js In Symfony](https://www.cloudways.com/blog/symfony-vuejs-app/))
+
+First, make sure you [install Node.js](https://nodejs.org/en/download/) and also the [NPM package manager](https://www.npmjs.com).
+
+We can use the commands `node -v` and `npm -v` to know the version installed in our computer.
+
+Then, install Encore into your project with [NPM](https://www.npmjs.com):
+
+```bash
+npm install @symfony/webpack-encore --save-dev
+```
+
+If you are using Flex for your project, you can initialize your project for Encore via:
+
+```bash
+composer require encore
+```
+(Source: [Symfony Doc - Webpack Encore Component](https://symfony.com/doc/current/frontend/encore/installation.html))
+
+This will create a webpack.config.js file, add the assets/ directory, and add node_modules/ to .gitignore.
+
+This command creates (or modifies) a [package.json](./package.json) file and downloads dependencies into a [node_modules/](./node_modules/) directory. When using npm 5, a [package-lock.json](./package-lock.json) file is created/updated.
+
+Next, create your [webpack.config.js](./webpack.config.js).
+
+_[webpack.config.js](./webpack.config.js)_
+```js
+// webpack.config.js
+var Encore = require('@symfony/webpack-encore');
+
+Encore
+    // the project directory where all compiled assets will be stored
+    .setOutputPath('public/build/')
+
+    // the public path used by the web server to access the previous directory
+    .setPublicPath('/build')
+
+    // will create public/build/app.js and public/build/app.css
+    .addEntry('app', './assets/js/app.js')
+
+    // allow legacy applications to use $/jQuery as a global variable
+    .autoProvidejQuery()
+
+    // enable source maps during development
+    .enableSourceMaps(!Encore.isProduction())
+
+    // empty the outputPath dir before each build
+    .cleanupOutputBeforeBuild()
+
+    // show OS notifications when builds finish/fail
+    .enableBuildNotifications()
+
+    // create hashed filenames (e.g. app.abc123.css)
+    // .enableVersioning()
+
+    // allow sass/scss files to be processed
+    // .enableSassLoader()
+;
+
+// export the final configuration
+module.exports = Encore.getWebpackConfig();
+```
+
+_[/templates/base.html.twig]()_
+```diff
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Welcome!{% endblock %}</title>
+    {% block stylesheets %}
+++    <link rel="stylesheet" href="{{ asset('build/app.css') }}">
+    {% endblock %}
+  </head>
+  <body>
+    {% block body %}{% endblock %}
+    {% block javascripts %}
+++     <script src="{{ asset('build/app.js') }}"></script>  
+    {% endblock %}
+  </body>
+</html>
+```
+
+Now, we install Vue and some dependencies:
+
+```bash
+npm i vue --save-dev
+```
+(Source: [https://www.npmjs.com/package/vue](https://www.npmjs.com/package/vue))
+
+```bash
+npm i vue-loader --save
+```
+(Source: [https://www.npmjs.com/package/vue-loader](https://www.npmjs.com/package/vue-loader))
+
+```bash
+npm i vue-template-compiler --save
+```
+(Source: [https://www.npmjs.com/package/vue-template-compiler](https://www.npmjs.com/package/vue-template-compiler))
+
+Then, activate the **vue-loader** and its plugin in [webpack.config.js](./webpack.config.js):
+
+_[webpack.config.js](./webpack.config.js)_
+```diff
+var Encore = require('@symfony/webpack-encore');
+++ const { VueLoaderPlugin } = require('vue-loader');
+
+Encore
+    // the project directory where compiled assets will be stored
+    .setOutputPath('public/build/')
+    // the public path used by the web server to access the previous directory
+    .setPublicPath('/build')
+    .cleanupOutputBeforeBuild()
+    .enableSourceMaps(!Encore.isProduction())
+    // uncomment to create hashed filenames (e.g. app.abc123.css)
+    // .enableVersioning(Encore.isProduction())
+
+    // uncomment to define the assets of the project
+    // .addEntry('js/app', './assets/js/app.js')
+++  .addEntry('js/app', './assets/js/app.js')
+    // .addStyleEntry('css/app', './assets/css/app.scss')
+
+    // uncomment if you use Sass/SCSS files
+    // .enableSassLoader()
+
+    // uncomment for legacy applications that require $/jQuery as a global variable
+    // .autoProvidejQuery()
+++  // Enable Vue loader
+++  .enableVueLoader()
+++  .addPlugin(new VueLoaderPlugin())
+++  ;
+;
+
+module.exports = Encore.getWebpackConfig();
+```
+
+> **Issue** [enableVueLoader does not include VueLoaderPlugin? #311](https://github.com/symfony/webpack-encore/issues/311) - [symfony - webpack-encore](https://github.com/symfony/webpack-encore)  
+
+We can already create our first component of Vue:
+
+_[/assets/js/app.js](/assets/js/app.js)_
+```js
+// assets/js/app.js
+import Vue from 'vue';
+ 
+import Example from './components/Example'
+ 
+/**
+* Create a fresh Vue Application instance
+*/
+new Vue({
+  el: '#app',
+  components: {Example}
+});
+```
+
+And its component.
+
+_[/assets/js/components/Example.vue]()_
+```html
+<template>
+   <div>
+       <p>This is an example of a new components in VueJs</p>
+   </div>
+</template>
+ 
+<script>
+   export default {
+       name: "example"
+   }
+</script>
+ 
+<style scoped>
+ 
+</style>
+```
+
+_[/templates/base.html.twig]()_
+```diff
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Welcome!{% endblock %}</title>
+    {% block stylesheets %}
+      <link rel="stylesheet" href="{{ asset('build/app.css') }}">
+    {% endblock %}
+  </head>
+  <body>
+++  <div id="app">  
+      {% block body %}{% endblock %}
+++  </div>  
+    {% block javascripts %}
+      <script src="{{ asset('build/app.js') }}"></script>  
+    {% endblock %}
+  </body>
+</html>
+```
+
+_[/templates/default/vue-example.html.twig]()_
+```html
+{% extends 'base.html.twig' %}
+{% block body %}
+ 
+   <div class="text-center">
+       <h3>My Symfony 4 sample project</h3>
+ 
+       <div class="jumbotron text-center">
+           <example></example>
+       </div>
+   </div>
+ 
+{% endblock %}
+```
+
+_[src/Resources/config/routing/default.yml](./src/Resources/config/routing/default.yml)_
+```diff
+# ...
+test:
+    path: /test
+    controller: App\Controller\DefaultController::test
+    #methods:   [POST]
+++ test_vue_example:
+++   path: /vue_example
+++   controller: App\Controller\DefaultController::vueExample  
+```
+
+_[/src/Controller/DefaultController.php](./src/Controller/DefaultController.php)_
+```diff
+<?php
+// src/Controller/DefaultController.php
+namespace App\Controller;
+
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+
+use App\Entity\Users;
+
+class DefaultController extends Controller {
+  // ...
+++ public function vueExample (request $request) {
+++   return $this->render('default/vue-example.html.twig');
+++ }  
+}
+```
+
+<div style="text-align: right"><a href="#summary-steps">Return to <strong>Summary Steps</strong></a></div>
+
+--------------------------------------------------------------------------------------------
+
+### 5.3.Installing SASS and bootstrap 4 
+
+--------------------------------------------------------------------------------------------
+
+First, we install Sass and Bootstrap dependencies:
+
+```bash
+npm i sass-loader --save-dev
+```
+(Source: [npm - sass-loader](https://www.npmjs.com/package/sass-loader))
+
+```bash
+npm i node-sass --save-dev
+```
+(Source: [npm - node-sass](https://www.npmjs.com/package/node-sass))
+
+```bash
+npm i bootstrap --save-dev
+```
+(Source: [npm - bootstrap](https://www.npmjs.com/package/bootstrap))
+
+```bash
+npm i jquery --save-dev
+```
+(Source: [npm - jquery](https://www.npmjs.com/package/jquery))
+
+```bash
+npm i popper.js --save
+```
+(Source: [npm - popper](https://www.npmjs.com/package/popper))
+
+And we will have to modified the [webpack.config.js](./webpack.config.js) with the new configuration.
+
+_[webpack.config.js](./webpack.config.js)_
+```diff
+var Encore = require('@symfony/webpack-encore');
+const { VueLoaderPlugin } = require('vue-loader');
+
+Encore
+    // the project directory where compiled assets will be stored
+    .setOutputPath('public/build/')
+    // the public path used by the web server to access the previous directory
+    .setPublicPath('/build')
+    .cleanupOutputBeforeBuild()
+    .enableSourceMaps(!Encore.isProduction())
+    // uncomment to create hashed filenames (e.g. app.abc123.css)
+    // .enableVersioning(Encore.isProduction())
+
+    // uncomment to define the assets of the project
+    // .addEntry('js/app', './assets/js/app.js')
+    .addEntry('js/app', './assets/js/app.js')
+    // .addStyleEntry('css/app', './assets/scss/app.scss')
+
+    // uncomment if you use Sass/SCSS files
+    // .enableSassLoader()
+++  .enableSassLoader()
+
+    // uncomment for legacy applications that require $/jQuery as a global variable
+    // .autoProvidejQuery()
+    // Enable Vue loader
+    .enableVueLoader()
+    .addPlugin(new VueLoaderPlugin())
+    ;
+;
+
+module.exports = Encore.getWebpackConfig();
+```
+
+Now modified the [/assets/js/app.js](./assets/js/app.js) for include the libraries **jquery** and **bootstrap** in our vue app.
+
+_[/assets/js/app.js](./assets/js/app.js)_
+```diff
+// assets/js/app.js
+++ import $ from 'jquery';
+++ import 'bootstrap';
+
+import Vue from 'vue';
+
+import Example from './components/Example'
+ 
+/**
+* Create a fresh Vue Application instance
+*/
+new Vue({
+  el: '#app',
+  components: {Example}
+});
+```
+
+And include the library **bootstrap** in our style file, 
+
+_[/assets/scss/app.scss](./assets/scss/app.scss)_
+```scss
+@import '~bootstrap/scss/bootstrap';
+
+$acceVerde: #84a640;
+$acceAzul: #396696;
+
+h1 {
+    color: $acceVerde;
+
+    s {
+        color: $acceAzul;
+    }
+}
+```
+
+<div style="text-align: right"><a href="#summary-steps">Return to <strong>Summary Steps</strong></a></div>
+
+--------------------------------------------------------------------------------------------
+
+## 6.Creating a JSON Response
 
 --------------------------------------------------------------------------------------------
 
@@ -393,9 +830,9 @@ class DefaultController extends Controller {
 composer require symfony/http-foundation
 ```
 
-1. First we will check the sending method jsonResponse, generating a test in the controller [/symfony/src/Controller/DefaultController.php](./symfony/src/Controller/DefaultController.php).
+1. First we will check the sending method jsonResponse, generating a test in the controller [/src/Controller/DefaultController.php](./src/Controller/DefaultController.php).
 
-_[/symfony/src/Controller/DefaultController.php](./symfony/src/Controller/DefaultController.php)_
+_[/src/Controller/DefaultController.php](./src/Controller/DefaultController.php)_
 ```diff
 <?php
 // src/Controller/DefaultController.php
@@ -438,7 +875,7 @@ class DefaultController extends Controller {
 composer require symfony/serializer
 ```
 
-_[/symfony/src/Service/Helpers.php](./symfony/src/Service/Helpers.php)_
+_[/src/Service/Helpers.php](./src/Service/Helpers.php)_
 ```php
 <?php
 // src/Service/Helpers.php
@@ -475,9 +912,9 @@ Objects are normalized to a map of property names and values (names are generate
 
 * **Encoders**, `JsonEncoder`, This class encodes and decodes data in JSON.
 
-3. To use this new service it is necessary to declare it in [config/services.yaml](./symfony/config/services.yaml).
+3. To use this new service it is necessary to declare it in [config/services.yaml](./config/services.yaml).
 
-_[/symfony/config/services.yaml](./symfony/config/services.yaml)_
+_[/config/services.yaml](./config/services.yaml)_
 ```diff
 //...
     # controllers are imported separately to make sure services can be injected
@@ -494,9 +931,9 @@ _[/symfony/config/services.yaml](./symfony/config/services.yaml)_
 ++          $manager: '@doctrine.orm.entity_manager'
 ```
 
-4. Inside the [src/Controller/DefaultController.php](./symfony/src/Controller/DefaultController.php) we will call it that.
+4. Inside the [src/Controller/DefaultController.php](./src/Controller/DefaultController.php) we will call it that.
 
-_[/symfony/src/Controller/DefaultController.php](./symfony/src/Controller/DefaultController.php)_
+_[/src/Controller/DefaultController.php](./src/Controller/DefaultController.php)_
 ```diff
 <?php
 // src/Controller/DefaultController.php
@@ -528,15 +965,17 @@ class DefaultController extends Controller {
 }
 ```
 
---------------------------------------------------------------------------------------------
-
-### 6.Login JWT
+<div style="text-align: right"><a href="#summary-steps">Return to <strong>Summary Steps</strong></a></div>
 
 --------------------------------------------------------------------------------------------
 
-1. Create the `function login` within [/symfony/src/Controller/AuthenticationController.php](./symfony/src/Controller/AuthenticationController.php).
+### 7.Login JWT
 
-_[/symfony/src/Controller/DefaultController.php](./symfony/src/Controller/DefaultController.php)_
+--------------------------------------------------------------------------------------------
+
+1. Create the `function login` within [/src/Controller/AuthenticationController.php](./src/Controller/AuthenticationController.php).
+
+_[/src/Controller/DefaultController.php](./src/Controller/DefaultController.php)_
 ```diff
 namespace App\Controller;
 
@@ -568,9 +1007,9 @@ class AuthenticationController extends Controller {
 //..
 ```
 
-3. We add a new route in [src/Resources/config/routing/default.yml](./symfony/src/Resources/config/routing/default.yml).
+3. We add a new route in [src/Resources/config/routing/default.yml](./src/Resources/config/routing/default.yml).
 
-_[/symfony/src/Resources/config/routing/authentication.yml](./symfony/src/Resources/config/routing/authentication.yml)_
+_[/src/Resources/config/routing/authentication.yml](./src/Resources/config/routing/authentication.yml)_
 ```yml
 authentication_login:
     path: /login
@@ -583,7 +1022,7 @@ authentication_login:
 
 5. We complete the **method login** so that it looks for the email match within the **User entity**.
 
-_[/symfony/src/Controller/AuthenticationController.php](./symfony/src/Controller/AuthenticationController.php)_
+_[/src/Controller/AuthenticationController.php](./src/Controller/AuthenticationController.php)_
 ```diff
 //...
 class AuthenticationController extends Controller {
@@ -627,7 +1066,7 @@ class AuthenticationController extends Controller {
 
 7. we will need to create a new **service** that authenticates us and generates the token.
 
-_[src/Service/JwtAuth.php](./symfony/src/Service/JwtAuth.php)_
+_[src/Service/JwtAuth.php](./src/Service/JwtAuth.php)_
 ```php
 <?php
 // src/Service/JwtAuth.php
@@ -673,9 +1112,9 @@ class JwtAuth{
 
 > You need the library **Firebase\JWT**, to install execute the command `composer require firebase/php-jwt`.
 
-8. To use this new service it is necessary to declare it in [config/services.yaml](./symfony/config/services.yaml).
+8. To use this new service it is necessary to declare it in [config/services.yaml](./config/services.yaml).
 
-_[config/services.yaml](./symfony/config/services.yaml)_
+_[config/services.yaml](./config/services.yaml)_
 ```diff
 //...
     # controllers are imported separately to make sure services can be injected
@@ -695,9 +1134,10 @@ _[config/services.yaml](./symfony/config/services.yaml)_
 ++      arguments: 
 ++          $manager: '@doctrine.orm.entity_manager'            
 ```
-9. Now we will modify the **login method**, in [/symfony/src/Controller/AuthenticationController.php](./symfony/src/Controller/AuthenticationController.php), so that it consults in the database if the user exists and if it exists, it generates a **token**.
 
-_[/symfony/src/Controller/AuthenticationController.php](./symfony/src/Controller/AuthenticationController.php)_
+9. Now we will modify the **login method**, in [/src/Controller/AuthenticationController.php](./src/Controller/AuthenticationController.php), so that it consults in the database if the user exists and if it exists, it generates a **token**.
+
+_[/src/Controller/AuthenticationController.php](./src/Controller/AuthenticationController.php)_
 ```diff
 //...
 use App\Service\Helpers;
@@ -750,7 +1190,7 @@ class AuthenticationController extends Controller {
 
 10. we must generate a new method within the service that checks the token.
 
-_[src/Service/JwtAuth.php](./symfony/src/Service/JwtAuth.php)_
+_[src/Service/JwtAuth.php](./src/Service/JwtAuth.php)_
 ```diff
 //..
 class JwtAuth{
@@ -782,9 +1222,9 @@ In our case we received:
 "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjEsImVtYWlsIjoiYWRtaW5AYWRtaW4uY29tIiwibmFtZSI6ImFkbWluIiwic3VybmFtZSI6ImFkbWluIiwiaWF0IjoxNTI1MDk3NTEwLCJleHAiOjE1MjU3MDIzMTB9.UA3f6W2mqzrHCoJNvCqxHW4NmOFe-9sMVfNOXXPW_gY"
 ```
 
-12. We modify the **test method** in [/symfony/src/Controller/DefaultController.php](./symfony/src/Controller/DefaultController.php).
+12. We modify the **test method** in [/src/Controller/DefaultController.php](./src/Controller/DefaultController.php).
 
-_[/symfony/src/Controller/DefaultController.php](./symfony/src/Controller/DefaultController.php)_
+_[/src/Controller/DefaultController.php](./src/Controller/DefaultController.php)_
 ```diff
 //...
 use App\Service\Helpers;
@@ -821,10 +1261,14 @@ In our case we received:
 {"status":"success","users":[{"id":1,"username":"","name":"admin","surname":"admin","email":"admin@admin.com","password":"1","createdAt":{"timezone":{"name":"UTC","transitions":[{"ts":-9223372036854775808,"time":"-292277022657-01-27T08:29:52+0000","offset":0,"isdst":false,"abbr":"UTC"}],"location":{"country_code":"??","latitude":0,"longitude":0,"comments":""}},"offset":0,"timestamp":1522540800},"salt":null,"role":"admin","roles":["ROLE_USER","ROLE ADMIN"]}]}
 ```
 
---------------------------------------------------------------------------------------------
-
-### 7.Other Requests to the Api
+<div style="text-align: right"><a href="#summary-steps">Return to <strong>Summary Steps</strong></a></div>
 
 --------------------------------------------------------------------------------------------
 
-> To be able to access the rest of the requests, you must see the url of the request inside the routing files of the directory [/symfony/src/Resources/config/routing/](./symfony/src/Resources/config/routing/) and access the corresponding controller method [/symfony/src/Controller/](./symfony/src/Controller/).
+### 8.Other Requests to the Api
+
+--------------------------------------------------------------------------------------------
+
+> To be able to access the rest of the requests, you must see the url of the request inside the routing files of the directory [/src/Resources/config/routing/](./src/Resources/config/routing/) and access the corresponding controller method [/src/Controller/](./src/Controller/).
+
+<div style="text-align: right"><a href="#summary-steps">Return to <strong>Summary Steps</strong></a></div>

@@ -1,0 +1,7 @@
+test:
+    path: /test
+    controller: App\Controller\DefaultController::test
+    #methods:   [POST]
+test_vue_example:
+    path: /vue_example
+    controller: App\Controller\DefaultController::vueExample  
