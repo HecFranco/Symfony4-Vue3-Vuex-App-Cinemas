@@ -1,4 +1,4 @@
-# 01 Boilerplate Using Vue-CLI and ES6
+# Vue and Vuex - App Cinemas (Frontend)
 
 In this sample we are going to setup a web project that can be easily managed by **Vue-CLI**.
 

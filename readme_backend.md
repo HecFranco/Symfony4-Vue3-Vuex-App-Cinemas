@@ -1,4 +1,4 @@
-# Symfony 4 - Task Manager (Backend)
+# Symfony 4 - App Cinemas (Backend)
 
 We will make the backend of the application with the framework Symfony. We will have two entities, **User** and **Task**. Access to the login will be via `Jwt`
 
