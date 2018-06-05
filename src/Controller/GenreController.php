@@ -15,26 +15,14 @@ use App\Entity\Genres;
 class GenreController extends Controller {
 	public function allGenres(Request $request, Helpers $helpers, JwtAuth $jwt_auth){
     $em = $this->getDoctrine()->getManager();
-		$token = $request->get('authorization', null);
-    $authCheck = $jwt_auth->checkToken($token);
     $user_repo = $em->getRepository(Users::class);
     $genres_repo = $em->getRepository(Genres::class);
-		if($authCheck){
-			$identity = $jwt_auth->checkToken($token, true);
-      $user = $user_repo->findOneById($identity->sub);
-      $genresList = $genres_repo->findAll();
-			$data = array(
-				'status' => 'success',
-				'code'   => 200,
-				'data' => $genresList
-			);
-		}else{
-			$data = array(
-				'status' => 'error',
-				'code'   => 400,
-				'msg'	 => 'Authorization not valid'
-			);
-		}
+    $genresList = $genres_repo->findAll();
+		$data = array(
+			'status' => 'success',
+			'code'   => 200,
+			'data' => $genresList
+		);
 		return $helpers->json($data);
   }
   

@@ -1,6 +1,6 @@
 App\Entity\MovieShowings:
     type: entity
-    #repositoryClass: App\Repository\MovieShowingsRepository  
+    repositoryClass: App\Repository\MovieShowingsRepository  
     table: movie_showings
     indexes:
         cinema:

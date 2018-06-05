@@ -32,6 +32,10 @@ import Axios from 'axios';
 //vee-validate
   import VeeValidate, {Validator} from 'vee-validate';
   // To make validator with translations......
+  import validatorEs from './validator/es';
+  import validatorEn from './validator/en';
+  Validator.localize('es', validatorEs);
+  // To make validator with translations......
   Vue.use(VeeValidate);
 //.vee-validate
 
@@ -44,6 +48,8 @@ import Axios from 'axios';
   import globalTypes from './types/global';
   import authModule from './modules/auth';
   import cinemaModule from './modules/cinema';
+  import movieModule from './modules/movie';
+  import bookingModule from './modules/booking';
 //.modules and types
 
 //vuex
@@ -90,6 +96,8 @@ import Axios from 'axios';
     modules: {
       authModule,
       cinemaModule,
+      movieModule,
+      bookingModule      
     }
     });
     //.global data warehouse with vuex

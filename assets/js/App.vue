@@ -42,7 +42,8 @@ body {
   background-color: #fff !important;
 }
 .login,
-.register {
+.register,
+.movies__wrapper {
   position: relative !important;
   top: 65px !important;
 }

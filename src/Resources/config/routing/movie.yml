@@ -1,7 +1,6 @@
 movie_cinema:
     path: /movies/{cinemaUrl}/byCinema
     controller: App\Controller\MovieController::byCinema
-    methods:   [POST]
 movie_movie:
     path: /movies/{movieUrl}/byMovie
     controller: App\Controller\MovieController::byMovie

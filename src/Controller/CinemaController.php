@@ -20,19 +20,10 @@ class CinemaController extends Controller {
 		//$cinemaList = $cinemas_repo->findAll();
 		$cinemaList = $cinemas_repo->getListCinemas();
 		$data = array(
-			'msg'	 => 'User with authentication',
 			'status' => 'success',
 			'code'   => 200,
 			'data' => $cinemaList
 		);
-		$token = $request->get('authorization', null);
-		$authCheck = $jwt_auth->checkToken($token);			
-		if($authCheck){
-			$identity = $jwt_auth->checkToken($token, true);
-      $user = $user_repo->findOneById($identity->sub);
-		}else{
-			$data['msg'] = 'User without authentication';
-		}
 		return $helpers->json($data);
 	}
 	public function findCinema(Request $request, $nameUrl = null, Helpers $helpers, JwtAuth $jwt_auth){

@@ -5,6 +5,7 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 use App\Service\Helpers;
 use App\Service\JwtAuth;
@@ -16,12 +17,11 @@ use App\Entity\MovieShowings;
 class MovieController extends Controller {
 	public function byCinema(Request $request, $cinemaUrl, Helpers $helpers, JwtAuth $jwt_auth){
     $em = $this->getDoctrine()->getManager();
-		$token = $request->get('authorization', null);
-    $authCheck = $jwt_auth->checkToken($token);
-		$cinemas_repo = $em->getRepository(Cinemas::class);
+		$user_repo = $em->getRepository(Users::class);
+		$cinemas_repo = $em->getRepository(Cinemas::class);	
 		$movieShowings_repo = $em->getRepository(MovieShowings::class);
-		$cinema = $cinemas_repo->findOneBy(array('nameUrl'=>$cinemaUrl));	
-		$moviesList = $movieShowings_repo->findBy(array('cinema'=>$cinema));	
+		$cinema = $cinemas_repo->findOneBy(array('nameUrl'=>$cinemaUrl));
+		$moviesList = $movieShowings_repo->getListMoviesOfCinema($cinemaUrl);
 		if($cinema === NULL){
 			$data = array(
 				'status' => 'error',
@@ -34,11 +34,6 @@ class MovieController extends Controller {
 				'code'   => 200,
 				'data' => $moviesList
 			);
-		}
-		if($authCheck){
-			$identity = $jwt_auth->checkToken($token, true);
-			$user_repo = $em->getRepository(Users::class);
-      $user = $user_repo->findOneById($identity->sub);
 		}
 		return $helpers->json($data);
 	}

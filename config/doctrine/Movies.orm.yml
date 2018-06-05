@@ -18,6 +18,14 @@ App\Entity\Movies:
             length: 120
             options:
                 fixed: false
+        nameUrl:
+            type: string
+            nullable: false
+            length: 100
+            options:
+                fixed: false     
+            column: name_url
+            unique: true                
         director:
             type: string
             nullable: false

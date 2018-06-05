@@ -11,6 +11,9 @@ class Movies {
     private $name;
     public function setName($name) { $this->name = $name; return $this; }
     public function getName() { return $this->name; }
+    private $nameUrl;
+    public function setNameUrl($nameUrl) { $this->nameUrl = $nameUrl; return $this; }
+    public function getNameUrl() { return $this->nameUrl; }     
     private $director;
     public function setDirector($director) { $this->director = $director; return $this; }
     public function getDirector() { return $this->director; }   

@@ -20,11 +20,15 @@
             {{ $t('navigation.cinema') }}
           </router-link>
         </li>
-        <li class="nav-item"><router-link class="nav-link" to="/profile" v-if="isLogged && userLogged != null">{{ $t('navigation.my_account') }}</router-link></li>
-        <li class="nav-item"><router-link class="nav-link" to="/bookings" v-if="isLogged && userLogged != null">{{ $t('navigation.bookings') }}</router-link></li>
-        <!--
+        <li class="nav-item">
+          <router-link class="nav-link" to="/profile" v-if="isLogged && userLogged != null">{{ $t('navigation.my_account') }}</router-link>
+        </li>
+        <li class="nav-item">
+          <router-link class="nav-link" to="/bookings" v-if="isLogged && userLogged != null">{{ $t('navigation.bookings') }}</router-link>
+        </li>
+        <!-- language-selector -->
         <language-selector></language-selector>          
-        -->
+        <!-- language-selector -->
       </ul>
       <ul class="navbar-nav my-auto"> 
           <li class="nav-item">
@@ -49,8 +53,10 @@
 <script>
   import {mapGetters, mapActions} from 'vuex';
   import authTypes from '../types/auth';
+  import LanguageSelector from "./LanguageSelector";
 
   export default {
+    components: {LanguageSelector},    
     name: 'navigation',
     methods: {
       ...mapActions({
