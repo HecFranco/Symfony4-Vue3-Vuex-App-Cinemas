@@ -3,17 +3,17 @@
 We will make the backend of the application with the framework Symfony. We will have two entities, **User** and **Task**. Access to the login will be via `Jwt`
 
 ### Summary steps:
-1. [Project Creation](#1project_creation)
-2. [Database Configuration](#2database_configuration)
+1. [Project Creation](#1project-creation)
+2. [Database Configuration](#2database-configuration)
 3. [Entities](#3entities)
 4. [Routing](#4routing)
-5. [Installing Vue, SASS and bootstrap 4 using WebPackEncore](#5installing_vue,_sass_and_bootstrap_4_using_webpackencore)
-    1. [Installing Twig](#51installing_twig)
-    2. [Installing Vue using WebPackEncore](#52installing_vue_using_webpackencore)
-    3. [Installing SASS and bootstrap 4](#53installing_sass_and_bootstrap_4)
-6. [Creating a JSON Response](#6creating_a_json_response)
-7. [Login JWT](#7login_jwt)
-8. [Other Requests to the Api](#8other_requests_to_the_api)
+5. [Installing Vue, SASS and bootstrap 4 using WebPackEncore](#5installing-vue,-sass-and-bootstrap-4-using-webpackencore)
+    1. [Installing Twig](#51installing-twig)
+    2. [Installing Vue using WebPackEncore](#52installing-vue-using-webpackencore)
+    3. [Installing SASS and bootstrap 4](#53installing-sass-and-bootstrap-4)
+6. [Creating a JSON Response](#6creating-a-json-response)
+7. [Login JWT](#7login-jwt)
+8. [Other Requests to the Api](#8other-requests-to-the-api)
 
 ---------------------------------------------------------------------------------------
 
