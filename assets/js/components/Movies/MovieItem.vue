@@ -20,13 +20,13 @@
     </div>
 
     <div class="card-body">
-      <h2 class="card-title">
+      <h2 class="card-title title-movie">
         <!--<router-link>-->
-          {{ $t('movie.name') }}: {{ movie.name }}
+          <!--{{ $t('movie.name') }}:--> {{ movie.name }}
         <!--</router-link>-->
       </h2>
       <p class="card-text">{{ $t('movie.director') }}: {{ movie.director }}</p>
-      <p class="card-text">{{ $t('movie.synopsis') }}: {{ movie.synopsis }}</p>
+      <p class="card-text synopsis">{{ $t('movie.synopsis') }}: {{ movie.synopsis }}</p>
       <p class="card-text">{{ $t('movie.room_number') }}: {{ movie.number }}</p>
       <p class="card-text">{{ $t('movie.room_rows') }}: {{ movie.rows }}</p>
       <p class="card-text">{{ $t('movie.room_seats') }}: {{ movie.seats }}</p>
@@ -47,40 +47,58 @@
 </template>
 
 <script>
-  import MovieGenres from "./MovieGenres";
-  // import MovieShowingTimes from "./MovieShowingTimes";
-  export default {
-    components: {
-      // MovieShowingTimes,
-      MovieGenres
+import MovieGenres from "./MovieGenres";
+// import MovieShowingTimes from "./MovieShowingTimes";
+export default {
+  components: {
+    // MovieShowingTimes,
+    MovieGenres
+  },
+  name: "movie",
+  props: {
+    movie: {
+      type: Object,
+      required: true
     },
-    name: 'movie',
-    props: {
-      movie: {
-        type: Object,
-        required: true
-      },
-      booking: {
-        type: Boolean,
-        required: true
-      }
-    },
-    computed: {
-      /*
+    booking: {
+      type: Boolean,
+      required: true
+    }
+  },
+  computed: {
+    /*
       canBooking () {
         return this.movie.movie_showing_times.length > 0;
       }
       */
-    }
   }
+};
 </script>
 
 <style scoped>
-  .MovieItem__Wrapper {
-    background: #181D23 !important;
-    padding: 10px;
-  }
-  .MovieItem__Wrapper h2 {
-    margin-top: 0;
-  }
+.movieItem__wrapper {
+  background: #181d23 !important;
+  padding: 10px;
+}
+.movieItem__wrapper h2 {
+  margin-top: 0;
+}
+.synopsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2; /* number of lines to show */
+  line-height: 20px; /* fallback */
+  height: 40px; /* fallback */
+}
+.title-movie {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2; /* number of lines to show */
+  line-height: 32px; /* fallback */
+  height: 64px; /* fallback */  
+}
 </style>

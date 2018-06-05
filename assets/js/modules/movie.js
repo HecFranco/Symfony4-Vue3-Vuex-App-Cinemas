@@ -43,7 +43,6 @@ const actions = {
 const getters = {
   [types.getters.movies]: (state) => {
     let movies = state.cinemaInfo;
-    /*
     if(state.query.search) {
       movies = movies.filter(movie => movie.name.toLowerCase().includes(state.query.search))
     }
@@ -54,25 +53,24 @@ const getters = {
       movies = movies.filter(movie => movie.seats >= state.query.seats)
     }
     if(state.query.genre) {
-      movies = movies.filter(movie => movie.genres.some(genre => genre.pivot.genre_id === state.query.genre))
+      movies = movies.filter(movie => movie.genres.some(genre => genre.id === state.query.genre))
     }
     if(state.query.hour) {
-      movies = movies.filter(movie => movie.movie_showing_times.some(movie_showing_time => {
-        const arrayHour = movie_showing_time.hour_to_show.split(':');
-        return parseInt(arrayHour[0]) === state.query.hour;
+      movies = movies.filter(movie => movie.movie_showing_times.some(movie_showing_times => {
+        const arrayHour = movie_showing_times.hour_to_show.split(':');
+        // state.query.hour hour select for the filter
+        // arrayHour[0] this the hour o'clock
+        return parseInt(arrayHour[0]) >= state.query.hour;
       }))
     }
-    */
     return movies;
   },
-  /*
   [types.getters.genres]: state => state.genres,
   [types.getters.genre]: state => state.query.genre,
   [types.getters.search]: state => state.query.search,
   [types.getters.rows]: state => state.query.rows,
   [types.getters.seats]: state => state.query.seats,
   [types.getters.hour]: state => state.query.hour,
-  */
 };
 
 const mutations = {
@@ -82,7 +80,6 @@ const mutations = {
   [types.mutations.receivedGenres]: (state, {apiResponse}) => {
     state.genres = apiResponse.data;
   },
-  /*
   [types.mutations.setSearch]: (state, query) => {
     state.query.search = query;
   },
@@ -107,7 +104,6 @@ const mutations = {
       genre: null
     };
   }
-  */
 };
 
 export default {

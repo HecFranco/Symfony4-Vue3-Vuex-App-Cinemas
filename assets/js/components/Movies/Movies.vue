@@ -62,5 +62,7 @@
 </script>
 
 <style scoped>
-
+.movie{
+ margin-bottom: 10px;
+}
 </style>

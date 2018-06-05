@@ -1,20 +1,17 @@
 <template>
-  <div class="MovieFilter__Wrapper">
-    <div class="well">
+  <div class="card" style="padding-bottom:10px;">
+    <div class="col-md-12 col-xs-12">
       <h2 class="text-center" v-html="$t('filter.movie')"></h2>
       <label
         class="control-label"
         v-html="$t('filter.search')"
       ></label>
-
       <input
         v-model="search"
         class="form-control"
         :placeholder="$t('filter.search')"
       />
-
       <hr />
-
       <label class="control-label" v-html="$t('filter.rows')"></label>
       <select v-model="rows" class="form-control">
         <option v-for="(row, index) in [1,2,3,4,5,6,7,8,9,10,11,12]" :value="row" :key="index">{{ row }}</option>
@@ -31,10 +28,10 @@
 
       <label class="control-label" v-html="$t('filter.genres')"></label>
       <select v-model="genre" class="form-control">
-        <option v-for="(genre, index) in genres" :value="genre.id" :key="index">{{ genre.genre_name }}</option>
+        <option v-for="(genre, index) in genres" :value="genre.id" :key="index">{{ genre.name }}</option>
       </select>
 
-      <hr />
+      <hr/>
 
       <label class="control-label" v-html="$t('filter.hours')"></label>
       <select v-model="hour" class="form-control">

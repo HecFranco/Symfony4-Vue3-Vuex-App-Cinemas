@@ -1,6 +1,6 @@
 <template>
   <div class="MovieGenres__Wrapper">
-    <label>{{ $t('genre.name') }}</label>
+    <label><!--{{ $t('genre.name') }}--></label>
     <div v-if="genres">
       <span class="badge badge-info" v-for="(genre, index) in genres" :key="index">
         {{ genre.name }}
