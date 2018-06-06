@@ -44,6 +44,8 @@ class MovieShowingsRepository extends ServiceEntityRepository {
             foreach($movieShowingTimes as $keyMovieShowingTimes => $valueMovieShowingTimes){
                 $movieShowingTimesId = $valueMovieShowingTimes->getId();
                 $movieShowingTimesHourToShow = $valueMovieShowingTimes->getHourToShow();
+                $array = explode(":", $movieShowingTimesHourToShow);
+                $movieShowingTimesHourToShow = $array[0].':'.$array[1];
                 $movieShowingTimes = ['id'=>$movieShowingTimesId, 'hour_to_show'=>$movieShowingTimesHourToShow];
                 array_push($valueMovies['movie_showing_times'], $movieShowingTimes);
             } 

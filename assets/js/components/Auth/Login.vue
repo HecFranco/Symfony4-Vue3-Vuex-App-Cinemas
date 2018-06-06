@@ -91,7 +91,8 @@
           </button>
         </form>
       </div>
-    </div>                
+    </div>  
+    <pre style="color:white;">{{$data}}</pre>                  
   </div>
 </template>
 
@@ -104,8 +105,10 @@
     data () {
       return {
         user:{
-          email: '',
-          password: '',
+          // email: '',
+          // password: '',
+          email: 'admin@admin.com',
+          password: 'admin_',
           getHash: null
         },
         error: null
@@ -120,6 +123,7 @@
         // validator for the login form
         this.$validator.validateAll()
           .then(result => {
+            console.log(result);
             if ( ! result) {
               //There are errors
               console.log('Vee-Validate is not working correctly')

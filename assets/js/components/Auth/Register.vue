@@ -129,14 +129,13 @@
             >
               <input
                 autocomplete="off"
-                name="password_confirmation"
-                v-model="password_confirmation"
-                v-validate
-                data-vv-rules="required|confirmed:password"
-                class="form-control"
                 type="password"
+                v-model="password_confirmation"
+                name="password_confirmation"
+                class="form-control"
                 id="password_confirmation"
                 :placeholder="$t('register.password_confirmation')"
+                v-validate="'required|confirmed:password'"              
                 :class="{ 'has-error' : errors.has('password_confirmation') }"
               >
               <span
@@ -155,7 +154,8 @@
           </button>
         </form>
       </div>
-    </div>                
+    </div>  
+    <pre style="color:white;">{{$data}}</pre>              
   </div>
 </template>
 

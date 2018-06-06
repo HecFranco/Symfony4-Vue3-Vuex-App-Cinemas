@@ -16,7 +16,7 @@ use App\Entity\Users;
 
 class AuthenticationController extends Controller {
   public function login(Request $request, Helpers $helpers, JwtAuth $jwt_auth){
-    // Receive json by POST
+		// Receive json by POST
 		$json = $request->get('json', null);
 		
     // Array to return by default
@@ -28,12 +28,11 @@ class AuthenticationController extends Controller {
         // you make the login
         // We convert a json to a php object
 				$params = json_decode($json);
-				//$params = $params->user;
+				$params = $params->user;
         $email = (isset($params->email)) ? $params->email : null;
         $password = (isset($params->password)) ? $params->password : null;
         $getHash = (isset($params->getHash)) ? $params->getHash : null;
 				$emailConstraint = new Assert\Email();
-
         $emailConstraint->message = "This email is not valid !!";
         $validate_email = $this->get("validator")->validate($email, $emailConstraint);
         // Encrypt the password
@@ -60,7 +59,7 @@ class AuthenticationController extends Controller {
     $em = $this->getDoctrine()->getManager();
 		$json = $request->get("json", null);
 		$params = json_decode($json);
-		// $params = $params->user;
+		$params = $params->user;
     $user_repo = $em->getRepository(Users::class);
 
 		$data = array(

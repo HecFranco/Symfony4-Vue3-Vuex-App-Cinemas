@@ -7,7 +7,7 @@ We will make the backend of the application with the framework Symfony. We will 
 2. [Database Configuration](#2database-configuration)
 3. [Entities](#3entities)
 4. [Routing](#4routing)
-5. [Installing Vue, SASS and bootstrap 4 using WebPackEncore](#5installing-vue,-sass-and-bootstrap-4-using-webpackencore)
+5. [Installing Vue, SASS and bootstrap 4 using WebPackEncore](#5installing-vue-sass-and-bootstrap-4-using-webpackencore)
     1. [Installing Twig](#51installing-twig)
     2. [Installing Vue using WebPackEncore](#52installing-vue-using-webpackencore)
     3. [Installing SASS and bootstrap 4](#53installing-sass-and-bootstrap-4)

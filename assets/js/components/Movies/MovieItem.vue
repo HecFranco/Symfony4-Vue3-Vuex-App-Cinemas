@@ -1,29 +1,23 @@
 <template>
   <div class="card" style="background:#181d23;">
     <div class="col-md-12 col-xs-12">
-      <!--<router-link 
-      > -->
-        <img 
-          :src="'../assets/screenshot_movies/'+movie.screenshot" 
-          class="card-img-top" 
-          alt="Card image cap"
-        />
-      <!--</router-link>-->
-      <!--
+      <img 
+        :src="'../assets/screenshot_movies/'+movie.screenshot" 
+        class="card-img-top" 
+        alt="Card image cap"
+      />
       <button
         v-if="canBooking && booking"
         @click="$emit('startReservation', movie.id)"
         class="btn btn-warning btn-block"
       >
         {{ $t('movie.reservation') }}
-      </button>-->
+      </button>
     </div>
 
     <div class="card-body">
       <h2 class="card-title title-movie">
-        <!--<router-link>-->
-          <!--{{ $t('movie.name') }}:--> {{ movie.name }}
-        <!--</router-link>-->
+        <!--{{ $t('movie.name') }}:--> {{ movie.name }}
       </h2>
       <p class="card-text">{{ $t('movie.director') }}: {{ movie.director }}</p>
       <p class="card-text synopsis">{{ $t('movie.synopsis') }}: {{ movie.synopsis }}</p>
@@ -33,14 +27,11 @@
       <div class="col-md-12">
         <movie-genres :genres="movie.genres"></movie-genres>
       </div>
-
       <div class="col-md-12">
-        <!--
         <movie-showing-times
           v-on:selectHour="$emit('selectHour', $event)"
           :showing_times="movie.movie_showing_times"
         ></movie-showing-times>
-        -->
       </div>
     </div>
   </div>
@@ -48,10 +39,10 @@
 
 <script>
 import MovieGenres from "./MovieGenres";
-// import MovieShowingTimes from "./MovieShowingTimes";
+import MovieShowingTimes from "./MovieShowingTimes";
 export default {
   components: {
-    // MovieShowingTimes,
+    MovieShowingTimes,
     MovieGenres
   },
   name: "movie",
@@ -66,11 +57,9 @@ export default {
     }
   },
   computed: {
-    /*
-      canBooking () {
-        return this.movie.movie_showing_times.length > 0;
-      }
-      */
+    canBooking() {
+      return this.movie.movie_showing_times.length > 0;
+    }
   }
 };
 </script>
@@ -99,6 +88,6 @@ export default {
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2; /* number of lines to show */
   line-height: 32px; /* fallback */
-  height: 64px; /* fallback */  
+  height: 64px; /* fallback */
 }
 </style>
