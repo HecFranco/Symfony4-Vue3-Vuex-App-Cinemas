@@ -33,6 +33,7 @@
                 v-model="username"
                 v-validate
                 data-vv-rules="required"
+                ref="password"
                 class="form-control"
                 type="text"
                 id="username"
@@ -54,7 +55,6 @@
               v-html="$t('register.email')"
             >
             </label>
-
             <div
               class="col-md-12"
               :class="{ 'has-error' : errors.has('email') }"
@@ -79,9 +79,7 @@
               </span>
             </div>
           </div>
-          <div
-            class="form-group"
-          >
+          <div class="form-group" >
             <label
               class="control-label col-md-12"
               for="password"
@@ -94,16 +92,16 @@
               :class="{ 'has-error' : errors.has('password') }"
             >
               <input
-                autocomplete="off"
-                name="password"
-                v-model="password"
-                v-validate
-                data-vv-rules="required|min:6"
-                class="form-control"
-                type="password"
-                id="password"
-                :placeholder="$t('register.password')"
-                :class="{ 'has-error' : errors.has('password') }"
+                autocomplete = "off"
+                name ="password"
+                v-model = "password"
+                v-validate = "'required|min:6'"
+                ref="password"
+                class = "form-control"
+                type = "password"
+                id = "password"
+                :placeholder = "$t('register.password')"
+                :class = "{ 'has-error' : errors.has('password') }"
               >
               <span
                 v-show="errors.has('password')"
@@ -113,30 +111,27 @@
               </span>
             </div>
           </div>
-          <div
-            class="form-group"
-          >
+          <div class="form-group" >
             <label
               class="control-label col-md-12"
               for="password_confirmation"
               v-html="$t('register.password_confirmation')"
             >
             </label>
-
             <div
               class="col-md-12"
               :class="{ 'has-error' : errors.has('password_confirmation') }"
             >
               <input
-                autocomplete="off"
-                type="password"
-                v-model="password_confirmation"
-                name="password_confirmation"
-                class="form-control"
-                id="password_confirmation"
-                :placeholder="$t('register.password_confirmation')"
-                v-validate="'required|confirmed:password'"              
-                :class="{ 'has-error' : errors.has('password_confirmation') }"
+                autocomplete = "off"
+                name ="password_confirmation"
+                v-model = "password_confirmation"
+                v-validate="'required|confirmed:password'"
+                class = "form-control"
+                type = "password"
+                id = "password_confirmation"
+                :placeholder = "$t('register.password_confirmation')"
+                :class = "{ 'has-error' : errors.has('password_confirmation') }"
               >
               <span
                 v-show="errors.has('password_confirmation')"
@@ -155,58 +150,60 @@
         </form>
       </div>
     </div>  
-    <pre style="color:white;">{{$data}}</pre>              
+    <pre>{{$data}}</pre>              
   </div>
 </template>
 
 <script>
-  import authTypes from '../../types/auth';
-  import {mapActions} from 'vuex';
+import authTypes from "../../types/auth";
+import { mapActions } from "vuex";
 
-  export default {
-    name: 'register',
-    data () {
-      return {
-        username: '',
-        email: '',
-        password: '',
-        password_confirmation: '',
-        error: null
-      }
-    },
-    methods: {
-      ...mapActions({
-        // we define the action of model auth.js 'authTypes.actions.register' like 'register' alias
-        register: authTypes.actions.register
-      }),
-      validateBeforeSubmit () {
-        // validator for the register form
-        this.$validator.validateAll()
-          .then(result => {
-            if ( ! result) {
-              //There are errors
-              console.log('Vee-Validate is not working correctly')
-            } else {
-              this.register({
-                  email: this.email,
-                  password: this.password,
-                  username: this.username
-                })
-                .then(
-                  response => {
-                    this.$router.push('/login');
-                  },
-                  error => {
-                    this.error = true;
-                  }
-                )  
-            }
-          })
-          .catch(error =>{
-            console.log(error);
-            this.error = true;
-          })
-      }
+export default {
+  name: "register",
+  data() {
+    return {
+      username: "",
+      email: "",
+      password: "",
+      password_confirmation: "",
+      error: null
+    }
+  },
+  methods: {
+    ...mapActions({
+      // we define the action of model auth.js 'authTypes.actions.register' like 'register' alias
+      register: authTypes.actions.register
+    }),
+    validateBeforeSubmit() {
+      // validator for the register form
+      console.log(this.$validator);
+      this.$validator
+        .validateAll()
+        .then(result => {
+          if (!result) {
+            console.log(result);
+            //There are errors
+            console.log("Vee-Validate is not working correctly");
+          } else {
+            this.register({
+              email: this.email,
+              password: this.password,
+              username: this.username
+            }).then(
+              response => {
+                this.$router.push("/login");
+              },
+              error => {
+                this.error = true;
+              }
+            );
+          }
+        })
+        .catch(error => {
+          console.log(error);
+          this.error = true;
+        });
     }
   }
+};
 </script>

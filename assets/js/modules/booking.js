@@ -1,6 +1,7 @@
 import types from '../types/booking';
 import globalTypes from '../types/global';
 import Vue from 'vue';
+import Axios from 'axios';
 
 const state = {
   movie: {},
@@ -14,10 +15,14 @@ const actions = {
   [types.actions.processReservation]: ({commit, state}, seats) => {
     commit(globalTypes.mutations.startProcessing);
     return new Promise((resolve, reject) => {
-      Vue.http.post('booking', {
-        seats,
-        movie_showing_times_id: state.movie_showing_times_id
-      })
+      Axios
+        .post('http://127.0.0.1:8000/api/v1/'+'booking', {
+          seats,
+          movie_showing_times_id: state.movie_showing_times_id
+        },
+        {
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded'}
+        })
         .then(booking => {
           resolve(booking.data);
         })
@@ -27,30 +32,36 @@ const actions = {
         .finally(() => {
           commit(globalTypes.mutations.stopProcessing);
         })
-    })
+      })
   },
   [types.actions.fetchMovie]: ({commit}, movieId) => {
     commit(globalTypes.mutations.startProcessing);
     return new Promise((resolve, reject) => {
-      Vue.http.get(`movies/${movieId}/byMovie`).then(movie => {
-        commit(types.mutations.receivedMovie, {apiResponse: movie});
-        resolve(movie.data);
-      })
+      Axios
+        .get('http://127.0.0.1:8000/api/v1/'+`movies/${movieId}/byMovie`,
+          {headers: { 'Content-Type': 'application/x-www-form-urlencoded' }})
+        .then(movie => {
+          commit(types.mutations.receivedMovie, {apiResponse: movie});
+          resolve(movie.data);
+        })
         .catch(error => {
           reject(error);
         })
         .finally(() => {
           commit(globalTypes.mutations.stopProcessing);
         })
-    });
+      });
   },
   [types.actions.lastBooking]: ({commit}) => {
     commit(globalTypes.mutations.startProcessing);
     return new Promise((resolve, reject) => {
-      Vue.http.get('bookings/last').then(booking => {
-        commit(types.mutations.receivedLastBooking, {apiResponse: booking});
-        resolve(booking.data);
-      })
+      Axios
+        .get('http://127.0.0.1:8000/api/v1/'+'bookings/last',
+          {headers: { 'Content-Type': 'application/x-www-form-urlencoded' }})
+        .then(booking => {
+          commit(types.mutations.receivedLastBooking, {apiResponse: booking});
+          resolve(booking.data);
+        })
         .catch(error => {
           reject(error);
         })
@@ -62,10 +73,18 @@ const actions = {
   [types.actions.fetchMyBookings]: ({commit}) => {
     commit(globalTypes.mutations.startProcessing);
     return new Promise((resolve, reject) => {
-      Vue.http.get('bookings/all').then(bookings => {
-        commit(types.mutations.setMyBookings, {apiResponse: bookings});
-        resolve(bookings);
-      })
+      Axios
+        .get('http://127.0.0.1:8000/api/v1/'+'bookings/all',
+          {
+            params: {
+              authorization: window.localStorage._token
+            },
+          },
+          {headers: { 'Content-Type': 'application/x-www-form-urlencoded' }})      
+        .then(response => {
+          commit(types.mutations.setMyBookings, {apiResponse: response.data});
+          resolve(response);
+        })
         .catch(error => {
           reject(error);
         })
@@ -131,7 +150,8 @@ const mutations = {
     state.lastBooking = apiResponse.body.data;
   },
   [types.mutations.setMyBookings]: (state, {apiResponse}) => {
-    state.my_bookings = apiResponse.body.data.bookings;
+    console.log(apiResponse.data);
+    state.my_bookings = apiResponse.data.bookings;
   }
 };
 

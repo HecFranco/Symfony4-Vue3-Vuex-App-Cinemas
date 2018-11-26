@@ -10,10 +10,14 @@ use App\Entity\GenreMovie;
 use App\Entity\Movies;
 use App\Entity\MovieShowingTimes;
 
+use App\Utils\TimeUtils;
+
 class MovieShowingsRepository extends ServiceEntityRepository {
+
     public function __construct(RegistryInterface $registry) {
         parent::__construct($registry, MovieShowings::class);
     }
+
     public function getListMoviesOfCinema($cinemaUrl): array {
         $em = $this->getEntityManager();
         $dateToday = new \DateTime('today');
@@ -44,6 +48,8 @@ class MovieShowingsRepository extends ServiceEntityRepository {
             foreach($movieShowingTimes as $keyMovieShowingTimes => $valueMovieShowingTimes){
                 $movieShowingTimesId = $valueMovieShowingTimes->getId();
                 $movieShowingTimesHourToShow = $valueMovieShowingTimes->getHourToShow();
+                // Using Utils
+
                 $array = explode(":", $movieShowingTimesHourToShow);
                 $movieShowingTimesHourToShow = $array[0].':'.$array[1];
                 $movieShowingTimes = ['id'=>$movieShowingTimesId, 'hour_to_show'=>$movieShowingTimesHourToShow];

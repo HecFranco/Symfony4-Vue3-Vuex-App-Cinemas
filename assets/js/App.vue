@@ -38,6 +38,9 @@ export default {
 body {
   background-color: #36383a !important;
 }
+pre{
+  color:white;
+}
 .well {
   background-color: #fff !important;
 }
@@ -83,6 +86,20 @@ hr {
   border: 1px solid #fff !important;
 }
 
+#filters{
+  margin-top:70px;
+  display: block;
+  @media (min-width: 768px) {
+    position:fixed;
+  }
+}
+
+#list-items{
+  margin-top:10px;
+  @media (min-width: 768px) {
+    margin-top:60px;
+  }
+}
 .navbar {
   margin-bottom: 20px;
 }

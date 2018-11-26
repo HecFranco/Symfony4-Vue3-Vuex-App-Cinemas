@@ -18,8 +18,9 @@ const state = {
 const actions = {
   [types.actions.fetchMovies]: ({commit}, nameUrl) => {
     commit(globalTypes.mutations.startProcessing);
+    // Vue.prototype.$hostname is defined in main.js and is the url of query
     Axios
-      .get(`http://127.0.0.1:8000/api/v1/movies/${nameUrl}/byCinema`,
+      .post(Vue.prototype.$hostname+`/movies/${nameUrl}/byCinema`,
       {headers: { 'Content-Type': 'application/x-www-form-urlencoded' }})
       .then(response => {
         commit(types.mutations.receivedMovies, {apiResponse: response.data});
@@ -29,8 +30,9 @@ const actions = {
   },
   [types.actions.fetchGenres]: ({commit}) => {
     commit(globalTypes.mutations.startProcessing);
+    // Vue.prototype.$hostname is defined in main.js and is the url of query
     Axios
-      .post('http://127.0.0.1:8000/api/v1/genres',
+      .post(Vue.prototype.$hostname+'/genres',
       {headers: { 'Content-Type': 'application/x-www-form-urlencoded' }})
       .then(response => {
         commit(types.mutations.receivedGenres, {apiResponse: response.data});

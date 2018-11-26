@@ -1,14 +1,12 @@
 <template>
   <div class="row" id="movies">
-    <div class="col-md-3 col-xs-12" id="filters" style="margin-top:70px; position:fixed">
+    <div class="col-md-3 col-xs-12" id="filters">
       <movie-filter></movie-filter>
     </div>
     <!--
       <div v-if="movies && movies.length > 0">
     -->
-    <div class="col-md-9 col-xs-12 ml-auto" 
-      style="margin-top:60px;"
-    >
+    <div class="col-md-9 col-xs-12 ml-auto" id="list-items">
       <div class="row" v-if="movies">
         <div 
           v-for="(movie, index) in movies" 

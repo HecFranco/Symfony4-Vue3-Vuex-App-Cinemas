@@ -34,3 +34,5 @@ services:
         public: true
         arguments: 
             $manager: '@doctrine.orm.entity_manager'   
+    App\Utils\DateTimeUtils:
+        public: false      

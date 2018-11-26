@@ -2,6 +2,5 @@ movie_cinema:
     path: /movies/{cinemaUrl}/byCinema
     controller: App\Controller\MovieController::byCinema
 movie_movie:
-    path: /movies/{movieUrl}/byMovie
-    controller: App\Controller\MovieController::byMovie
-    methods:   [POST]         
+    path: /movies/{movieId}/byMovie
+    controller: App\Controller\MovieController::byMovie        

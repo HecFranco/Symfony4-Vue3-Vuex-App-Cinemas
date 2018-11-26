@@ -9,13 +9,11 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Validator\Constraints as Assert;
 
-use App\Service\Helpers;
-use App\Service\JwtAuth;
-
 use App\Entity\Users;
+use App\Entity\Customers;
 
-class AuthenticationController extends Controller {
-  public function login(Request $request, Helpers $helpers, JwtAuth $jwt_auth){
+class AuthenticationController extends AppCinemaAbstractController {
+  public function login(Request $request){
 		// Receive json by POST
 		$json = $request->get('json', null);
 		
@@ -38,13 +36,8 @@ class AuthenticationController extends Controller {
         // Encrypt the password
         $pwd = hash('sha256', $password);
         if($email != null && count($validate_email) == 0 && $password != null){
-						$signup = $jwt_auth->signup($email, $pwd);
-						if($getHash === null || $getHash === 'null' || $getHash === false || $getHash === 'false'){
-                $signup = $jwt_auth->signup($email, $pwd);
-            }elseif($getHash === true || $getHash === 'true') {
-                $signup = $jwt_auth->signup($email, $pwd, true);
-						}
-            return new JsonResponse($signup);
+						$token = $this->jwt_auth->signup($email, $pwd);
+            return new JsonResponse($token);
         }else{
             $data = array(
                 'status' => 'error',
@@ -52,9 +45,9 @@ class AuthenticationController extends Controller {
             );
         }        
     }
-    return $helpers->json($data);
+    return $this->helpers->json($data);
   } 
-  public function register(Request $request, Helpers $helpers){
+  public function register(Request $request){
     // Entity manager
     $em = $this->getDoctrine()->getManager();
 		$json = $request->get("json", null);
@@ -83,25 +76,32 @@ class AuthenticationController extends Controller {
 			$validate_email = $this->get("validator")->validate($email, $emailConstraint);
 
 			if($email != null && count($validate_email) == 0 && $password != null){
-					$user = new Users();
-          $user->setCreatedAt($createdAt);
-          $user->setUpdatedAt($createdAt);
-					$user->setRole($role);
-					$user->setEmail($email);
-          $user->setUsername($username);
-					$user->setName($name);
-          $user->setSurname($surname);
-					// Encrypt the password
-					$pwd = hash('sha256', $password);
-					$user->setPassword($password);          
-					$user->setPlainPassword($pwd);
-          
 					$isset_user = $user_repo->findBy(array( "email" => $email ));
-
 					if(count($isset_user) == 0){
+						$user = new Users();
+						$user->setCreatedAt($createdAt);
+						$user->setUpdatedAt($createdAt);
+						$user->setRole($role);
+						$user->setEmail($email);
+						$user->setUsername($username);
+						$user->setName($name);
+						$user->setSurname($surname);
+						// Encrypt the password
+						$pwd = hash('sha256', $password);
+						$user->setPassword($password);          
+						$user->setPlainPassword($pwd);
 						$em->persist($user);
 						$em->flush();
 
+						$customer = new Customers();
+						$customer->setUser($user);
+						$customer->setPhone(null);
+						$customer->setCreditCard(null);
+						$customer->setCreatedAt($createdAt);
+						$customer->setUpdatedAt($createdAt);
+						$em->persist($customer);
+						$em->flush();
+						
 						$data = array(
 							'status' => 'success',
 							'code'   => 200,
@@ -118,19 +118,19 @@ class AuthenticationController extends Controller {
 			}
 		}
 
-		return $helpers->json($data);
+		return $this->helpers->json($data);
   }
-	public function editProfile(Request $request, Helpers $helpers, JwtAuth $jwt_auth ){
+	public function editProfile(Request $request){
     // Entity manager
     $em = $this->getDoctrine()->getManager();
 		$token = $request->get('authorization', null);
-		$authCheck = $jwt_auth->checkToken($token);
+		$authCheck = $this->jwt_auth->checkToken($token);
 
     $user_repo = $em->getRepository(Users::class);
 
 		if($authCheck){
 				// Obtain user data identified via token
-				$identity = $jwt_auth->checkToken($token, true);
+				$identity = $this->jwt_auth->checkToken($token, true);
 				// Get the object to update
 				$user = $user_repo->findOneBy(array( 'id' => $identity->sub ));
 				// Collect post data
@@ -181,6 +181,6 @@ class AuthenticationController extends Controller {
 		}else{
 			$data = array( 'status' => 'error', 'code' => 400, 'msg' => 'Authorization not valid' );
 		}
-		return $helpers->json($data);
+		return $this->helpers->json($data);
 	}  
 }

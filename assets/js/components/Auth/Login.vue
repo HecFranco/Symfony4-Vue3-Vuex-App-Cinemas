@@ -92,7 +92,7 @@
         </form>
       </div>
     </div>  
-    <pre style="color:white;">{{$data}}</pre>                  
+    <pre>{{$data}}</pre>                  
   </div>
 </template>
 
@@ -105,10 +105,10 @@
     data () {
       return {
         user:{
-          // email: '',
-          // password: '',
-          email: 'admin@admin.com',
-          password: 'admin_',
+          email: '',
+          password: '',
+          // email: 'admin@admin.com',
+          // password: 'admin_',
           getHash: null
         },
         error: null

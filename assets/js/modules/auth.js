@@ -16,8 +16,9 @@ const actions = {
       let json = JSON.stringify({user: userInput});
       let params = "json=" + json;
       let headers = new Headers({ 'Content-Type': 'application/x-www-form-urlencoded' });
+      // Vue.prototype.$hostname is defined in main.js and is the url of query
       Axios
-        .post('http://127.0.0.1:8000/api/v1/login',
+        .post(Vue.prototype.$hostname+'/login',
           params,
           {headers: { 'Content-Type': 'application/x-www-form-urlencoded' }})
         .then(response => {
@@ -39,10 +40,11 @@ const actions = {
       let json = JSON.stringify({user: userInput});
       let params = "json=" + json;
       let headers = new Headers({ 'Content-Type': 'application/x-www-form-urlencoded' });
+      // Vue.prototype.$hostname is defined in main.js and is the url of query
       Axios
-        .post('http://127.0.0.1:8000/api/v1/register',
+        .post(Vue.prototype.$hostname+'/register',
           params,
-          {headers: { 'Content-Type': 'application/x-www-form-urlencoded' }})
+          {headers: headers})
         .then(response => {
           resolve(response);
         })

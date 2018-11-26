@@ -91,16 +91,16 @@
             :class="{ 'has-error' : errors.has('password') }"
           >
             <input
-              autocomplete="off"
-              name="password"
-              v-model="user.password"
+              autocomplete = "off"
+              name = "password"
+              v-model = "user.password"
               v-validate
-              data-vv-rules="required|min:6"
-              class="form-control"
-              type="password"
-              id="password"
-              :placeholder="$t('register.password')"
-              :class="{ 'has-error' : errors.has('password') }"
+              data-vv-rules = "required|min:6"
+              class = "form-control"
+              type = "password"
+              id = "password"
+              :placeholder = "$t('register.password')"
+              :class = "{ 'has-error' : errors.has('password') }"
             >
             <span
               v-show="errors.has('password')"

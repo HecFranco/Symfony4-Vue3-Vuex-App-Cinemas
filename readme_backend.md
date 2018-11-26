@@ -30,6 +30,8 @@ We will make the backend of the application with the framework Symfony. We will 
 * [Debug-Bundle Component](https://symfony.com/doc/current/components/debug.html), `composer require debug --dev`
 * [The Config Component](https://symfony.com/doc/current/components/config.html), `composer require symfony/config`.
 
+* `composer require dependency-injection`
+
 * [Twig Component](https://twig.symfony.com/doc/2.x/), `composer require twig`
 * [Twig Extension Component](https://symfony.com/doc/current/templating/twig_extension.html), `composer require twig/extensions`
 * [Asset component](https://symfony.com/doc/current/components/asset.html), `composer require symfony/asset`

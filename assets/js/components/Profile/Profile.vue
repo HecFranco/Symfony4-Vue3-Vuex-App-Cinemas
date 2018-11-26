@@ -1,33 +1,71 @@
 <template>
-  <div class="login col-md-6 col-md-offset-3">
-    <h1 class="text-center text-muted">
+  <div class="register col-md-6 offset-md-3">
+     <!-- Title of Form -->  
+    <h1 class="text-center">
       <u v-html="$t('profile.title')"></u>
-    </h1>
-
-    <div class="alert alert-success" v-if="success" v-html="$t('profile.updated')"></div>
-
+    </h1>    
+    <!-- Message of Error --> 
     <div class="alert alert-danger" v-if="error" v-html="$t('profile.error')"></div>
-
     <hr />
+    <!-- Message of Success -->     
+    <div class="alert alert-success" v-if="success" v-html="$t('profile.updated')"></div>
+    <hr />
+    <!-- Block Form username -->
+    <div class="card">
+      <div class="card-body">
+        <form
+          autocomplete="off"
+          class="form-horizontal"
+          @submit.prevent="validateBeforeSubmit"
+        >
+          <div class="form-group">
+            <label
+              class="control-label col-md-12"
+              for="username"
+              v-html="$t('register.username')"
+            >
+            </label>
 
-    <user-form
-      :user="{email: email, username: username}"
-      :btnText="$t('profile.title')"
-      v-if="userLogged"
-      :isProfile="true"
-      v-on:processUserForm="processProfile($event)"
-    ></user-form>
-
+            <div
+              class="col-md-12"
+              :class="{ 'has-error' : errors.has('username') }"
+            >
+              <input
+                autocomplete = "off"
+                name = "username"
+                v-model = "userlogged.username"
+                v-validate
+                data-vv-rules = "required"
+                ref = "password"
+                class = "form-control"
+                type = "text"
+                id = "username"
+                :placeholder = "userlogged.username"
+                :class = "{ 'has-error' : errors.has('username') }"
+              >
+              <span
+                v-show="errors.has('username')"
+                class="text-danger"
+              >
+                {{ errors.first('username') }}
+              </span>
+            </div>
+          </div>
+        </form>       
+      </div> 
+    </div>  
+    <pre>{{$data}}</pre>
   </div>
+  
 </template>
 
 <script>
   import authTypes from '../../types/auth';
   import {mapActions, mapGetters} from 'vuex';
-  import UserForm from "../Auth/UserForm";
+
   export default {
-    components: {UserForm},
-    name: 'profile',
+    // components: {UserForm},
+    name: 'profile',  
     data () {
       return {
         success: false,
@@ -40,18 +78,18 @@
       }),
       email: {
         get () {
-          return this.userLogged.data.email
+          return this.userLogged.email
         },
         set (email) {
-          this.userLogged.data.email = email;
+          this.userLogged.email = email;
         }
       },
       username: {
         get () {
-          return this.userLogged.data.username
+          return this.userLogged.username
         },
         set (username) {
-          this.userLogged.data.username = username;
+          this.userLogged.username = username;
         }
       }
     },
@@ -59,6 +97,15 @@
       ...mapActions({
         updateProfile: authTypes.actions.updateProfile
       }),
+      validateBeforeSubmit () {
+        this.$validator.validateAll().then(result => {
+          if ( ! result) {
+            //hay errores
+          } else {
+            this.$emit('processUserForm', this.user);
+          }
+        })
+      },      
       processProfile (user) {
         this.updateProfile({
           email: user.email,

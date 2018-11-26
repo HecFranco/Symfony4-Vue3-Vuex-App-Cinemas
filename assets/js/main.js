@@ -9,6 +9,9 @@ import 'bootstrap';
 import Example from './components/Example'
 */
 
+Vue.config.productionTip = false
+Vue.prototype.$hostname = (Vue.config.productionTip) ? 'http://127.0.0.1:8000/api/v1' : 'http://127.0.0.1:8000/api/v1'
+
 //bootstrapVue
 import BootstrapVue from 'bootstrap-vue'
 Vue.use(BootstrapVue);

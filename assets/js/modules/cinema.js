@@ -15,8 +15,9 @@ const actions = {
   [types.actions.fetchCinemas]: ({commit}) => {
     // start processing
     commit(globalTypes.mutations.startProcessing);
+    // Vue.prototype.$hostname is defined in main.js and is the url of query
     Axios
-      .post('http://127.0.0.1:8000/api/v1/cinemas',
+      .post(Vue.prototype.$hostname+'/cinemas',
         {headers: { 'Content-Type': 'application/x-www-form-urlencoded' }})
       .then(response => {
         commit(types.mutations.receivedCinemas, {apiResponse: response.data});

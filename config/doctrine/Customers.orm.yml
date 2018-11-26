@@ -18,13 +18,13 @@ App\Entity\Customers:
     fields:
         phone:
             type: string
-            nullable: false
+            nullable: true
             length: 14
             options:
                 fixed: false
         creditCard:
             type: string
-            nullable: false
+            nullable: true
             length: 40
             options:
                 fixed: false

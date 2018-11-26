@@ -6,14 +6,11 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints as Assert;
 
-use App\Service\Helpers;
-use App\Service\JwtAuth;
-
 use App\Entity\Users;
 use App\Entity\Cinemas;
 
-class CinemaController extends Controller {
-	public function allCinemas(Request $request, Helpers $helpers, JwtAuth $jwt_auth){
+class CinemaController extends AppCinemaAbstractController {
+	public function allCinemas(Request $request){
     $em = $this->getDoctrine()->getManager();
     $user_repo = $em->getRepository(Users::class);
 		$cinemas_repo = $em->getRepository(Cinemas::class);
@@ -24,9 +21,9 @@ class CinemaController extends Controller {
 			'code'   => 200,
 			'data' => $cinemaList
 		);
-		return $helpers->json($data);
+		return $this->helpers->json($data);
 	}
-	public function findCinema(Request $request, $nameUrl = null, Helpers $helpers, JwtAuth $jwt_auth){
+	public function findCinema(Request $request, $nameUrl = null){
     $em = $this->getDoctrine()->getManager();
 		$token = $request->get('authorization', null);
     $authCheck = $jwt_auth->checkToken($token);
@@ -48,6 +45,6 @@ class CinemaController extends Controller {
 				'msg'	 => 'Authorization not valid'
 			);
 		}
-		return $helpers->json($data);
+		return $this->helpers->json($data);
 	}  
 }

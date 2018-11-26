@@ -39,6 +39,7 @@ In this sample we are going to setup a web project that can be easily managed by
     2. [Script](#112script)
     3. [Showing the Component in his Route](#113showing-the-component-in-his-route)
 12. [Persist User in the Browser](#12persist-user-in-the-browser)
+
 ## Prerequisites
 
 Install [Node.js and npm](https://nodejs.org/en/) (v6.x.x or higher) if they are not already installed on your computer. 

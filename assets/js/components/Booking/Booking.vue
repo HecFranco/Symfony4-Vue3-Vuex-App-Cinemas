@@ -5,11 +5,12 @@
     <div class="clearfix"></div>
 
     <hr />
-
     <div v-if="booked" class="col-md-offset-2 col-md-8">
+
       <h1 class="text-center">{{ $t('booking.screen_info') }}</h1>
       <booking-seats :seatsIds="seatsIds" :room="movie.room"></booking-seats>
     </div>
+    <pre>{{$data}}</pre>
   </div>
 </template>
 
